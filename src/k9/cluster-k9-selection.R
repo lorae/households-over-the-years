@@ -115,7 +115,7 @@ saveRDS(best_model, best_model_path)
 message("Best-fit model saved to: ", best_model_path)
 
 # Raw data with cluster labels
-labelled_clusters <- ipums_household_tb |> mutate(cluster = k_fit$cluster)
+labelled_clusters <- ipums_household_tb |> mutate(cluster = best_model$cluster)
 saveRDS(labelled_clusters, labelled_cluster_path)
 message("Labelled clusters saved to: ", labelled_cluster_path)
 
