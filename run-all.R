@@ -17,8 +17,14 @@ source("src/figures/fig04-hoh-housemates-normalized-line.R")
 
 # k-means ML
 source("src/cluster-elbow-plot.R") # choose k from k=1 to k=15 (outputs fig05)
-source("src/cluster-k6-selection.R") # choose among k = 6 model outputs (outputs fig06)
-source("src/cluster-analyze.R") # analyze the best fit k = 6 model
+
+# k = 6 clustering
+source("src/k6/cluster-k6-selection.R") # choose among k = 6 model outputs (outputs fig06)
+source("src/k6/cluster-define-archetypes.R") # outputs tab01, tab02, tab03
+source("src/k6/cluster-graph-archetypes.R") # outputs fig07, fig08, fig09, fig10
+
+# k = 9 clustering
+source("src/k9/cluster-k9-selection.R") # choose among k = 9 model outputs (outputs fig11)
 
 
 

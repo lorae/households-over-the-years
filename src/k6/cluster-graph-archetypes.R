@@ -109,25 +109,25 @@ plot_relative2023
 
 # ----- SAVE! ----- #
 # Save the plots as JPEGs (6" x 6")
-ggsave("output/figures/fig07-household-counts-time-line.jpg", 
+ggsave("output/figures/fig07-k6-household-counts-time-line.jpg", 
        plot_counts, 
        width = 6, height = 6, 
        dpi = 300,
        scale = 1.25)
 
-ggsave("output/figures/fig08-household-percents-time-line.jpg", 
+ggsave("output/figures/fig08-k6-household-percents-time-line.jpg", 
        plot_percents, 
        width = 6, height = 6, 
        dpi = 300,
        scale = 1.25)
 
-ggsave("output/figures/fig09-household-relative-1900-line.jpg", 
+ggsave("output/figures/fig09-k6-household-relative-1900-line.jpg", 
        plot_relative1900, 
        width = 6, height = 6, 
        dpi = 300,
        scale = 1.25)
 
-ggsave("output/figures/fig10-household-relative-2023-line.jpg", 
+ggsave("output/figures/fig10-k6-household-relative-2023-line.jpg", 
        plot_relative2023, 
        width = 6, height = 6, 
        dpi = 300,
@@ -135,14 +135,14 @@ ggsave("output/figures/fig10-household-relative-2023-line.jpg",
 
 # Save the CSV files in output/figure-data
 write_csv(cluster_counts_year, 
-          "output/figure-data/fig07-household-counts-time-line.csv")
+          "output/figure-data/fig07-k6-household-counts-time-line.csv")
 
 write_csv(cluster_percents_year, 
-          "output/figure-data/fig08-household-percents-time-line.csv")
+          "output/figure-data/fig08-k6-household-percents-time-line.csv")
 
 write_csv(cluster_percents_rel_1900, 
-          "output/figure-data/fig09-household-relative-1900-line.csv")
+          "output/figure-data/fig09-k6-household-relative-1900-line.csv")
 
 write_csv(cluster_percents_rel_2023, 
-          "output/figure-data/fig10-household-relative-2023-line.csv")
+          "output/figure-data/fig10-k6-household-relative-2023-line.csv")
 

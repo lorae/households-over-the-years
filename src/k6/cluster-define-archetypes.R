@@ -79,10 +79,10 @@ cluster_centers_df <- as.data.frame(cluster_centers)
 cluster_centers_df <- cluster_centers_df |>
   mutate(cluster = row_number(), .before = 1)
 
-write_csv(cluster_centers_df, "output/tables/tab01-cluster-zscores.csv")
+write_csv(cluster_centers_df, "output/tables/tab01-k6-cluster-zscores.csv")
 
 # Export means
-write_csv(cluster_means, "output/tables/tab02-cluster-means.csv")
+write_csv(cluster_means, "output/tables/tab02-k6-cluster-means.csv")
 
 # Export 90% intervals (5th to 95th percentile)
 # Merge all percentile tables
@@ -107,7 +107,7 @@ for (var in vars) {
     )
 }
 
-write_csv(cluster_intervals_formatted, "output/tables/tab03-cluster-90pct-intervals.csv")
+write_csv(cluster_intervals_formatted, "output/tables/tab03-k6-cluster-90pct-intervals.csv")
 
 # Cluster sizes
 cluster_sizes <- k_fit$size
