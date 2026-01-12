@@ -56,7 +56,7 @@ ipums_extract <- define_extract_micro(
     "HHINCOME", "RENT", "OWNCOST",
     # Person-level
     "PERNUM", "PERWT", "RELATE", "SEX", "AGE", "RACE", "HISPAN", 
-    "SUBFAM", "EMPSTAT", "INCTOT"
+    "SUBFAM", "EMPSTAT", "INCTOT", "BPL"
   )
 )
 
