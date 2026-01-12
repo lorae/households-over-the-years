@@ -1,7 +1,7 @@
 # process-person-level-ipums.R
 #
 # This script adds bucket columns to raw (person-level) data.
-# It reads data from the "ipums" table in `/five-decade-db/ipums-raw.duckdb` and writes processed
+# It reads data from the "ipums" table in `/five-decade-db/ipums.duckdb` and writes processed
 # data to the "ipums-bucketed" table in `/five-decade-db/ipums-processed.duckdb`.
 #
 # ----- Step 0: Configuration ----- #
@@ -14,7 +14,7 @@ devtools::load_all("../demographr")
 
 # ----- Step 1: Connect to the database ----- #
 
-con <- dbConnect(duckdb::duckdb(), "data/db/ipums.duckdb")
+con <- dbConnect(duckdb::duckdb(), "data/five-decade-db/ipums.duckdb")
 ipums_db <- tbl(con, "ipums")
 
 # For data validation: count number of rows, to ensure none are dropped later
