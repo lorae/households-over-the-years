@@ -19,28 +19,28 @@ crowded_decade_usa <- crosstab_percent(
   data = ipums_person |> filter(GQ %in% c(0,1,2)),
   wt_col = "PERWT",
   group_by = c("crowded", "YEAR"),
-  percent_group_by = ("YEAR")
+  percent_group_by = c("YEAR")
 ) 
 
 crowded_race_decade_usa <- crosstab_percent(
   data = ipums_person |> filter(GQ %in% c(0,1,2)),
   wt_col = "PERWT",
   group_by = c("race_eth", "crowded", "YEAR"),
-  percent_group_by = ("YEAR")
+  percent_group_by = c("YEAR", "race_eth")
 )
 
 crowded_tenure_decade_usa <- crosstab_percent(
   data = ipums_person |> filter(GQ %in% c(0,1,2)),
   wt_col = "PERWT",
   group_by = c("tenure", "crowded", "YEAR"),
-  percent_group_by = ("YEAR")
+  percent_group_by = c("YEAR", "tenure")
 ) 
 
 crowded_birthplace_decade_usa <- crosstab_percent(
   data = ipums_person |> filter(GQ %in% c(0,1,2)),
   wt_col = "PERWT",
   group_by = c("birthplace", "crowded", "YEAR"),
-  percent_group_by = ("YEAR")
+  percent_group_by = c("YEAR", "birthplace")
 ) 
 
 # Consolidate findings
@@ -56,11 +56,11 @@ library(writexl)
 # ---- Common year cleanup ----
 clean_years <- function(df) {
   df |>
-    filter(YEAR != 2010) |>
+    mutate(YEAR = ifelse(YEAR == 2012, 2010, YEAR)) |>
     mutate(YEAR = ifelse(YEAR == 2022, 2020, YEAR))
 }
 
-years <- c(1970, 1980, 1990, 2000, 2020)
+years <- c(1970, 1980, 1990, 2000, 2010, 2020)
 
 # ================================
 # 1. Overall crowding table
@@ -143,7 +143,7 @@ final_wide <- bind_rows(
   ) |>
   select(
     row,
-    `1970`, `1980`, `1990`, `2000`, `2020`
+    `1970`, `1980`, `1990`, `2000`, `2010`, `2020`
   )
 
 # ================================
@@ -156,6 +156,7 @@ blank <- tibble(
   `1980` = NA_real_,
   `1990` = NA_real_,
   `2000` = NA_real_,
+  `2010` = NA_real_,
   `2020` = NA_real_
 )
 

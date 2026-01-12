@@ -47,7 +47,7 @@ ipums_extract <- define_extract_micro(
     "us1980b", # 1980 1%
     "us1990b", # 1990 1%
     "us2000g", # 2000 1% 
-    "us2010g", # 2010 10%
+    "us2012e", # 2008-2012, ACS 5-year
     "us2022c" # 2018-2022, ACS 5-year
   ),
   variables = c(
