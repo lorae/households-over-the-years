@@ -1,8 +1,8 @@
 # process-person-level-ipums.R
 #
 # This script adds bucket columns to raw (person-level) data.
-# It reads data from the "ipums" table in `/db/ipums-raw.duckdb` and writes processed
-# data to the "ipums-bucketed" table in `/db/ipums-processed.duckdb`.
+# It reads data from the "ipums" table in `/five-decade-db/ipums-raw.duckdb` and writes processed
+# data to the "ipums-bucketed" table in `/five-decade-db/ipums-processed.duckdb`.
 #
 # ----- Step 0: Configuration ----- #
 library("dplyr")
