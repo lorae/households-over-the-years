@@ -91,6 +91,15 @@ ipums_person <- ipums_db |>
       race_bucket == "multi" ~ "Multiracial",
       race_bucket == "white" ~ "White",
       race_bucket == "other" ~ "Other"
+    ),
+    tenure = case_when(
+      OWNERSHP == 0 ~ NA_character_,
+      OWNERSHP == 1 ~ "owner",
+      OWNERSHP == 2 ~ "renter"
+    ),
+    birthplace = case_when(
+      BPL <= 120 ~ "U.S.-born",
+      BPL > 120 ~ "foreign-born"
     )
   )
 
