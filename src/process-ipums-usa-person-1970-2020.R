@@ -12,6 +12,11 @@ library("dbplyr")
 
 devtools::load_all("../demographr")
 
+# ----- Step 0.5: Load helper data ----- #
+inflators <- read_csv("reference/inflators-1970-2020.csv") |>
+  distinct(YEAR, .keep_all = TRUE) |>
+  mutate(YEAR = as.integer(YEAR))
+
 # ----- Step 1: Connect to the database ----- #
 
 con <- dbConnect(duckdb::duckdb(), "data/five-decade-db/ipums.duckdb")
@@ -24,6 +29,9 @@ obs_count <- ipums_db |>
 
 
 # ----- Step 2: Add columns ----- #
+
+# Make inflators available inside DuckDB
+inflators_db <- copy_to(con, inflators, name = "inflators", temporary = TRUE, overwrite = TRUE)
 
 ipums_person <- ipums_db |>
   mutate(
@@ -100,9 +108,9 @@ ipums_person <- ipums_db |>
     birthplace = case_when(
       BPL <= 120 ~ "U.S.-born",
       BPL > 120 ~ "foreign-born"
-    ),
-    year_income = coalesce(MULTYEAR, YEAR)
-  )
+    )
+  ) |>
+  left_join(inflators_db, by = "YEAR")
 
 # ----- Step 3: Compute, save, close out the connection ----- #
 
