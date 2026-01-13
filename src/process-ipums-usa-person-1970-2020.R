@@ -100,7 +100,8 @@ ipums_person <- ipums_db |>
     birthplace = case_when(
       BPL <= 120 ~ "U.S.-born",
       BPL > 120 ~ "foreign-born"
-    )
+    ),
+    year_income = coalesce(MULTYEAR, YEAR)
   )
 
 # ----- Step 3: Compute, save, close out the connection ----- #
