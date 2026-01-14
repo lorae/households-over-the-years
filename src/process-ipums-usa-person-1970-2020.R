@@ -34,6 +34,7 @@ obs_count <- ipums_db |>
 inflators_db <- copy_to(con, inflators, name = "inflators", temporary = TRUE, overwrite = TRUE)
 
 ipums_person <- ipums_db |>
+  left_join(inflators_db, by = "YEAR") |>
   mutate(
     # Top-code at 5, since 1940- 1970 has most restrictive top-code
     n_multifam = case_when(
@@ -108,9 +109,40 @@ ipums_person <- ipums_db |>
     birthplace = case_when(
       BPL <= 120 ~ "U.S.-born",
       BPL > 120 ~ "foreign-born"
+    ),
+    owncost_2020 = case_when(
+      OWNCOST == 99999 ~ NA_real_,
+      is.na(inflator_2020) ~ NA_real_,
+      TRUE ~ OWNCOST * inflator_2020
+    ),
+    hhincome_2020 = case_when(
+      HHINCOME == 99999 ~ NA_real_,
+      is.na(inflator_2020) ~ NA_real_,
+      TRUE ~ HHINCOME * inflator_2020
+    ),
+    inctot_2020 = case_when(
+      INCTOT == -9995 & YEAR == 1980 ~ -9900,
+      INCTOT == 0 ~ 0,
+      INCTOT == 1 ~ 0,
+      INCTOT == 9999999 ~ NA_real_,
+      INCTOT == 9999998 ~ NA_real_,
+      TRUE ~ INCTOT * inflator_2020
+    ),
+    # Apply universal top and bottom codes, documented in reference/inflators-1970-2020.xlsx
+    inctot_2020_harmonized = case_when(
+      inctot_2020 >= 260000 ~ 260000,
+      inctot_2020 <= -16000 ~ -16000,
+      TRUE ~ inctot_2020
+    ),
+    # Bin inctot_2020_harmonized variable
+    inctot_binned = case_when(
+      is.na(inctot_2020_harmonized) ~ NA_character_,
+      inctot_2020_harmonized < 50000 ~ "less than $50,000",
+      inctot_2020_harmonized >= 50000 & inctot_2020_harmonized <100000 ~ "$50,000 - $99,999",
+      inctot_2020_harmonized >= 100000 & inctot_2020_harmonized <150000 ~ "$100,000 - $149,999",
+      inctot_2020_harmonized >= 150000 ~ "$150,000 and greater"
     )
-  ) |>
-  left_join(inflators_db, by = "YEAR")
+  ) 
 
 # ----- Step 3: Compute, save, close out the connection ----- #
 
