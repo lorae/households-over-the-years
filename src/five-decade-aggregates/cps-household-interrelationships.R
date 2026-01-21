@@ -56,7 +56,7 @@ batch_size <- 100
 n_batches <- ceiling(length(all_households) / batch_size)
 cat("Processing in", n_batches, "batches\n")
 
-# Drop table if it exists
+# Drop table if it exists (allows for overwrite on re-runs)
 dbExecute(con, "DROP TABLE IF EXISTS ipums_person_with_subfamilies")
 
 # Process each batch
@@ -116,15 +116,27 @@ for (i in 1:n_batches) {
 
 cat("Complete! Table ipums_person_with_subfamilies created\n")
 
-# Verify and inspect
-tbl(con, "ipums_person_with_subfamilies") |> 
+# Force DuckDB to write all data to disk
+cat("Flushing data to disk...\n")
+dbExecute(con, "CHECKPOINT")
+
+# Verify the table was saved properly
+cat("Verifying saved table...\n")
+verification <- tbl(con, "ipums_person_with_subfamilies") |> 
   summarise(total_rows = n()) |>
   collect()
+
+cat("SUCCESS: Table saved to DuckDB with", verification$total_rows, "rows\n")
 
 # Check some sample output
 tbl(con, "ipums_person_with_subfamilies") |>
   select(hhid, perid, AGE, SEX, NUMPREC, PERNUM, MOMLOC, POPLOC, SPLOC, 
          n_subfamilies, subfamily_id, subfamily_size, nonsubfamily_size, 
          n_children, n_spouse) |>
+  head(20) |>
   collect() |>
-  View()
+  print(width = Inf)
+
+# Close connection to ensure data is persisted
+dbDisconnect(con, shutdown = TRUE)
+cat("Database connection closed. Data is safely persisted.\n")
