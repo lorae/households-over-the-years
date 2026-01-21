@@ -28,49 +28,53 @@ convert_person_refs <- function(
     target_ref_col,    # e.g., "PERNUM"
     source_ref_col,    # e.g., "LINENO"
     translate_cols,    # e.g., c("PELNMOM", "PELNDAD")
-    suffix = "_PERNUM" # controls output column naming
+    suffix = "_PERNUM"
 ) {
   
-  # ------------------------------------------------------------------
-  # Step 1: Create a household-scoped key for the reference variable.
-  # In CPS, PELNMOM stores the mother's LINENO within household.
-  # We combine hhid + PELNMOM to uniquely identify the referenced person.
-  # ------------------------------------------------------------------
-  orig_table <- df |>
-    mutate(
-      hhid_PELNMOM = paste(hhid, PELNMOM, sep = "-")
-    )
+  # Step 1: Create all composite keys on original table
+  out <- df
+  for (col in translate_cols) {
+    key_name <- paste0("hhid_", col)
+    out <- out |>
+      mutate(!!key_name := paste(hhid, .data[[col]], sep = "-"))
+  }
   
-  # ------------------------------------------------------------------
-  # Step 2: Build a lookup table mapping (hhid, LINENO) -> PERNUM.
-  # LINENO is unique within household, so this mapping is one-to-one.
-  # ------------------------------------------------------------------
-  lookup_table <- orig_table |>
-    select(hhid, LINENO, PERNUM) |>
+  # Step 2: Build lookup table mapping (hhid, source_ref) -> target_ref
+  lookup_table <- df |>
+    select(hhid, all_of(source_ref_col), all_of(target_ref_col)) |>
     mutate(
-      hhid_LINENO = paste(hhid, LINENO, sep = "-")
+      hhid_LINENO = paste(hhid, .data[[source_ref_col]], sep = "-")
     ) |>
-    select(hhid_LINENO, PERNUM)
+    select(hhid_LINENO, all_of(target_ref_col))
   
-  # ------------------------------------------------------------------
-  # Step 3: Join the original table to the lookup using the composite keys.
-  # This recovers the mother's PERNUM for each person.
-  # ------------------------------------------------------------------
-  out <- orig_table |>
-    left_join(
-      lookup_table,
-      by = c("hhid_PELNMOM" = "hhid_LINENO")
-    ) |>
-    rename(
-      PERNUM = PERNUM.x,
-      PELNMOM_PERNUM = PERNUM.y
+  # Step 3-4: Join, rename, and clean up for each translate column
+  for (col in translate_cols) {
+    key_name <- paste0("hhid_", col)
+    new_col_name <- paste0(col, suffix)
+    
+    # Join
+    out <- out |>
+      left_join(
+        lookup_table,
+        by = setNames("hhid_LINENO", key_name)
+      )
+    
+    # Rename the joined target_ref column
+    # After join, we'll have target_ref_col.x (original) and target_ref_col.y (joined)
+    pernum_y <- paste0(target_ref_col, ".y")
+    pernum_x <- paste0(target_ref_col, ".x")
+    
+    out <- out |>
+      rename(
+        !!target_ref_col := !!pernum_x,
+        !!new_col_name := !!pernum_y
       ) |>
-    mutate(
-      # Preserve CPS convention: 0 indicates no mother present
-      PELNMOM_PERNUM = if_else(PELNMOM == 0, 0, PELNMOM_PERNUM)
-    ) |>
-    select(-hhid_PELNMOM)
+      mutate(
+        # Preserve 0 as "no reference"
+        !!new_col_name := if_else(.data[[col]] == 0, 0, .data[[new_col_name]])
+      ) |>
+      select(-all_of(key_name))
+  }
   
   out
 }
-
