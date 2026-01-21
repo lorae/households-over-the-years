@@ -25,25 +25,11 @@ ipums_person <- tbl(con, "ipums_person") |>
       as.integer(PERNUM), sep = "-") # persons
   )
 
-# ===== TESTING MODE: Sample households, get all their persons =====
-set.seed(123)
-n_households = 1000
-
-# Get a sample of household IDs
-sampled_hhids <- ipums_person |>
+# ===== FULL DATASET MODE =====
+# Get all unique household IDs from the full dataset
+all_households <- ipums_person |>
   distinct(hhid) |>
   collect() |>
-  slice_sample(n = n_households) |>
-  pull(hhid)
-
-# Get ALL persons from those households
-sample_person_data <- ipums_person |>
-  filter(hhid %in% local(sampled_hhids)) |>
-  collect()
-
-# Get unique households from the sample
-all_households <- sample_person_data |>
-  distinct(hhid) |>
   pull(hhid)
 # ==========================================
 
@@ -68,9 +54,10 @@ for (i in 1:n_batches) {
   end_idx <- min(i * batch_size, length(all_households))
   batch_hhids <- all_households[start_idx:end_idx]
   
-  # Get data for this batch (from sample instead of database)
-  batch_data <- sample_person_data |>
-    filter(hhid %in% batch_hhids)
+  # Get data for this batch from database
+  batch_data <- ipums_person |>
+    filter(hhid %in% local(batch_hhids)) |>
+    collect()
   
   # Process households in this batch
   batch_results <- batch_data |>
