@@ -94,7 +94,9 @@ for (i in 1:n_batches) {
       hh |>
         mutate(
           n_subfamilies = comps$no,
-          subfamily_id = comps$membership
+          subfamily_id = comps$membership,
+          subfamily_size = comps$csize[comps$membership],
+          nonsubfamily_size = NUMPREC - subfamily_size
         )
     })
   
@@ -114,6 +116,7 @@ tbl(con, "ipums_person_with_subfamilies") |>
 
 # Check some sample output
 tbl(con, "ipums_person_with_subfamilies") |>
-  select(hhid, perid, AGE, SEX, PERNUM, MOMLOC, POPLOC, SPLOC, n_subfamilies, subfamily_id) |>
+  select(hhid, perid, AGE, SEX, NUMPREC, PERNUM, MOMLOC, POPLOC, SPLOC, 
+         n_subfamilies, subfamily_id, subfamily_size, nonsubfamily_size) |>
   collect() |>
   View()
