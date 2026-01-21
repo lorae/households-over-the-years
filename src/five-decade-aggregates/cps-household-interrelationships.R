@@ -25,25 +25,41 @@ ipums_person <- tbl(con, "ipums_person") |>
       as.integer(PERNUM), sep = "-") # persons
   )
 
-# ===== FULL DATASET MODE =====
-# Get all unique household IDs from the full dataset
-all_households <- ipums_person |>
+# ===== TEST MODE: Sample 1000 households =====
+set.seed(123)
+
+# Sample 1000 household IDs
+sampled_hhids <- ipums_person |>
   distinct(hhid) |>
   collect() |>
+  slice_sample(n = 1000) |>
+  pull(hhid)
+
+# Get ALL persons from those households
+sample_person_data <- ipums_person |>
+  filter(hhid %in% local(sampled_hhids)) |>
+  collect()
+
+# Get unique households from the sample
+all_households <- sample_person_data |>
+  distinct(hhid) |>
   pull(hhid)
 # ==========================================
 
 cat("Total households:", length(all_households), "\n")
 
 # Define batch size
-batch_size <- 100
+batch_size <- 1000
 
 # Split into batches
 n_batches <- ceiling(length(all_households) / batch_size)
 cat("Processing in", n_batches, "batches\n")
 
+# Connect to NEW test database
+con_test <- dbConnect(duckdb::duckdb(), "data/five-decade-db/ipums_cps_test.duckdb")
+
 # Drop table if it exists (allows for overwrite on re-runs)
-dbExecute(con, "DROP TABLE IF EXISTS ipums_person_with_subfamilies")
+dbExecute(con_test, "DROP TABLE IF EXISTS ipums_person_with_subfamilies")
 
 # Process each batch
 for (i in 1:n_batches) {
@@ -54,10 +70,9 @@ for (i in 1:n_batches) {
   end_idx <- min(i * batch_size, length(all_households))
   batch_hhids <- all_households[start_idx:end_idx]
   
-  # Get data for this batch from database
-  batch_data <- ipums_person |>
-    filter(hhid %in% local(batch_hhids)) |>
-    collect()
+  # Get data for this batch (from sample)
+  batch_data <- sample_person_data |>
+    filter(hhid %in% batch_hhids)
   
   # Process households in this batch
   batch_results <- batch_data |>
@@ -75,10 +90,10 @@ for (i in 1:n_batches) {
           age = AGE
         )
       
-      # Generate adjacency matrices and derived counts
-      adj_mat <- household_adjacency(hh_prep)
+      # Generate adjacency matrices and derived counts with edge severing (max_age = 17)
+      adj_mat <- household_adjacency(hh_prep, max_age = 17)
       comps <- count_components(adj_mat)
-      n_children <- count_children(hh_prep)
+      n_children <- count_children(hh_prep, max_age = 17)
       
       hh |>
         mutate(
@@ -94,8 +109,8 @@ for (i in 1:n_batches) {
         )
     })
   
-  # Write to DuckDB (append after first batch)
-  dbWriteTable(con, "ipums_person_with_subfamilies", batch_results, 
+  # Write to TEST DuckDB (append after first batch)
+  dbWriteTable(con_test, "ipums_person_with_subfamilies", batch_results, 
                append = (i > 1))
   
   cat("  Wrote", nrow(batch_results), "rows to database\n")
@@ -105,18 +120,18 @@ cat("Complete! Table ipums_person_with_subfamilies created\n")
 
 # Force DuckDB to write all data to disk
 cat("Flushing data to disk...\n")
-dbExecute(con, "CHECKPOINT")
+dbExecute(con_test, "CHECKPOINT")
 
 # Verify the table was saved properly
 cat("Verifying saved table...\n")
-verification <- tbl(con, "ipums_person_with_subfamilies") |> 
+verification <- tbl(con_test, "ipums_person_with_subfamilies") |> 
   summarise(total_rows = n()) |>
   collect()
 
-cat("SUCCESS: Table saved to DuckDB with", verification$total_rows, "rows\n")
+cat("SUCCESS: Table saved to TEST DuckDB with", verification$total_rows, "rows\n")
 
 # Check some sample output
-tbl(con, "ipums_person_with_subfamilies") |>
+tbl(con_test, "ipums_person_with_subfamilies") |>
   select(hhid, perid, AGE, SEX, NUMPREC, PERNUM, MOMLOC, POPLOC, SPLOC, 
          n_subfamilies, subfamily_id, subfamily_size, nonsubfamily_size, 
          n_children, n_spouse) |>
@@ -124,6 +139,7 @@ tbl(con, "ipums_person_with_subfamilies") |>
   collect() |>
   print(width = Inf)
 
-# Close connection to ensure data is persisted
+# Close connections to ensure data is persisted
 dbDisconnect(con, shutdown = TRUE)
-cat("Database connection closed. Data is safely persisted.\n")
+dbDisconnect(con_test, shutdown = TRUE)
+cat("Database connections closed. Data is safely persisted.\n")

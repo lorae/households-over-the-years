@@ -10,7 +10,8 @@ library("writexl")
 devtools::load_all("../demographr")
 
 # ----- Step 1: Connect to DB ----- #
-con <- dbConnect(duckdb::duckdb(), "data/five-decade-db/ipums_cps.duckdb")
+con <- dbConnect(duckdb::duckdb(), "data/five-decade-db/ipums_cps_test.duckdb")
+
 ipums_person <- tbl(con, "ipums_person_with_subfamilies") |>
   filter(AGE >= 18) |> # only adults
   mutate(
@@ -21,7 +22,7 @@ ipums_person <- tbl(con, "ipums_person_with_subfamilies") |>
   )
 
 hhsize_decade_cps <- crosstab_mean(
-  data = ipums_person, # no GQ variable?
+  data = ipums_person,
   value = "NUMPREC",
   wt_col = "ASECWT",
   group_by = c("YEAR")
@@ -48,19 +49,23 @@ nsubfamily_decade_cps <- crosstab_mean(
   group_by = c("YEAR")
 ) |> arrange(YEAR)
 
-othersubfamilysize_decade_cps <- crosstab_mean(
-  data = ipums_person,
-  value = "avg_other_subfamily_size",
-  wt_col = "ASECWT",
-  group_by = c("YEAR")
-) |> arrange(YEAR)
+# Calculate subfamily-weighted average size
+othersubfamilysize_decade_cps <- ipums_person |>
+  filter(n_other_subfamilies > 0) |>
+  mutate(subfamily_weight = n_other_subfamilies * ASECWT) |>
+  group_by(YEAR) |>
+  summarise(
+    weighted_mean = sum(avg_other_subfamily_size * subfamily_weight, na.rm = TRUE) / 
+      sum(subfamily_weight, na.rm = TRUE)
+  ) |>
+  collect() |>
+  arrange(YEAR)
 
 hhsize_decade_cps
 nchild_decade_cps
 spouse_decade_cps
 nsubfamily_decade_cps
 othersubfamilysize_decade_cps
-
 
 combined_cps <- hhsize_decade_cps |>
   select(YEAR, weighted_count, count, hhsize = weighted_mean) |>
@@ -73,15 +78,15 @@ combined_cps <- hhsize_decade_cps |>
     by = "YEAR"
   ) |>
   left_join(
-    nsubfamily_decade_cps |> select(YEAR, n_subfamily = weighted_mean),
+    nsubfamily_decade_cps |> select(YEAR, n_other_subfamily = weighted_mean),
     by = "YEAR"
   ) |>
   left_join(
-    othersubfamilysize_decade_cps |> select(YEAR, subfamily_size = weighted_mean),
+    othersubfamilysize_decade_cps |> select(YEAR, avg_other_subfamily_size = weighted_mean),
     by = "YEAR"
   ) |>
   mutate(
-    calculated_hhsize = 1 + n_child + n_spouse + n_subfamily * subfamily_size
+    calculated_hhsize = 1 + n_child + n_spouse + n_other_subfamily * avg_other_subfamily_size
   )
 
 combined_cps
