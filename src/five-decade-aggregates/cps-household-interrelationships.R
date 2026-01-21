@@ -88,15 +88,22 @@ for (i in 1:n_batches) {
           age = AGE
         )
       
+      # Generate adjacency matrices and derived counts
       adj_mat <- household_adjacency(hh_prep)
       comps <- count_components(adj_mat)
+      n_children <- count_children(hh_prep)
       
       hh |>
         mutate(
+          # Subfamily structure variables
           n_subfamilies = comps$no,
           subfamily_id = comps$membership,
           subfamily_size = comps$csize[comps$membership],
-          nonsubfamily_size = NUMPREC - subfamily_size
+          nonsubfamily_size = NUMPREC - subfamily_size,
+          # Relationship counts
+          n_children = n_children,
+          # Spouse indicator: 1 if SPLOC references a spouse, 0 otherwise
+          n_spouse = if_else(!is.na(SPLOC) & SPLOC > 0, 1, 0)
         )
     })
   
@@ -117,6 +124,7 @@ tbl(con, "ipums_person_with_subfamilies") |>
 # Check some sample output
 tbl(con, "ipums_person_with_subfamilies") |>
   select(hhid, perid, AGE, SEX, NUMPREC, PERNUM, MOMLOC, POPLOC, SPLOC, 
-         n_subfamilies, subfamily_id, subfamily_size, nonsubfamily_size) |>
+         n_subfamilies, subfamily_id, subfamily_size, nonsubfamily_size, 
+         n_children, n_spouse) |>
   collect() |>
   View()
