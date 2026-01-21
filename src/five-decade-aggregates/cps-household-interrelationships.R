@@ -72,5 +72,5 @@ results <- sample_data |>
 
 # Check the output
 results |>
-  select(hhid, perid, PERNUM, MOMLOC, POPLOC, SPLOC, n_subfamilies, subfamily_id) |>
+  select(hhid, perid, AGE, SEX, PERNUM, MOMLOC, POPLOC, SPLOC, n_subfamilies, subfamily_id) |>
   View()
