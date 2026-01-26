@@ -10,9 +10,9 @@ library("writexl")
 devtools::load_all("../demographr")
 
 # ----- Step 1: Connect to DB ----- #
-con <- dbConnect(duckdb::duckdb(), "data/five-decade-db/ipums_cps_test.duckdb")
+con <- dbConnect(duckdb::duckdb(), "data/five-decade-db/ipums_cps.duckdb")
 
-ipums_person <- tbl(con, "ipums_person_with_subfamilies") |>
+ipums_person <- tbl(con, "ipums_person_with_subfamilies_over18") |>
   filter(AGE >= 18) |> # only adults
   mutate(
     n_other_subfamilies = n_subfamilies - 1,
