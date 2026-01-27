@@ -97,6 +97,13 @@ write_csv(
   "output/five-decade-tables/raw/doubled_overall.csv"
 )
 
+nonprime_decade_us <- crosstab_mean(
+  data = base_data,
+  value = 
+  wt_col = "PERWT",
+  group_by = c("")
+)
+
 # ====================
 # By Race
 # ====================

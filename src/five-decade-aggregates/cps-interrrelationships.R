@@ -10,62 +10,86 @@ library("writexl")
 devtools::load_all("../demographr")
 
 # ----- Step 1: Connect to DB ----- #
-con <- dbConnect(duckdb::duckdb(), "data/five-decade-db/ipums_cps.duckdb")
+con <- dbConnect(
+  duckdb::duckdb(),
+  "data/five-decade-db/ipums_cps.duckdb"
+)
 
 ipums_person <- tbl(con, "ipums_person_with_subfamilies_over18") |>
-  filter(AGE >= 18) |> # only adults
+  filter(AGE >= 18) |>  # adults only
   mutate(
     n_other_subfamilies = n_subfamilies - 1,
-    avg_other_subfamily_size = if_else(n_other_subfamilies == 0, 
-                                       NA_real_, 
-                                       nonsubfamily_size / n_other_subfamilies)
+    avg_other_subfamily_size = if_else(
+      n_other_subfamilies == 0,
+      NA_real_,
+      nonsubfamily_size / n_other_subfamilies
+    )
   )
+
+# ================================
+# Decade-level means
+# ================================
 
 hhsize_decade_cps <- crosstab_mean(
   data = ipums_person,
   value = "NUMPREC",
   wt_col = "ASECWT",
-  group_by = c("YEAR")
+  group_by = "YEAR"
 ) |> arrange(YEAR)
 
 nchild_decade_cps <- crosstab_mean(
   data = ipums_person,
   value = "n_children",
   wt_col = "ASECWT",
-  group_by = c("YEAR")
+  group_by = "YEAR"
 ) |> arrange(YEAR)
 
 spouse_decade_cps <- crosstab_mean(
   data = ipums_person,
   value = "n_spouse",
   wt_col = "ASECWT",
-  group_by = c("YEAR")
+  group_by = "YEAR"
 ) |> arrange(YEAR)
 
 nsubfamily_decade_cps <- crosstab_mean(
   data = ipums_person,
   value = "n_other_subfamilies",
   wt_col = "ASECWT",
-  group_by = c("YEAR")
+  group_by = "YEAR"
 ) |> arrange(YEAR)
 
-# Calculate subfamily-weighted average size
+is_multifamily_decade_cps <- ipums_person |>
+  mutate(
+    is_multifamily = as.integer(n_other_subfamilies > 0)
+  ) |>
+  crosstab_mean(
+    value = "is_multifamily",
+    wt_col = "ASECWT",
+    group_by = "YEAR"
+  ) |>
+  arrange(YEAR) |>
+  rename(fraction_multifamily = weighted_mean)
+
+# ================================
+# Subfamily-weighted average size
+# ================================
+
 othersubfamilysize_decade_cps <- ipums_person |>
   filter(n_other_subfamilies > 0) |>
   mutate(subfamily_weight = n_other_subfamilies * ASECWT) |>
   group_by(YEAR) |>
   summarise(
-    weighted_mean = sum(avg_other_subfamily_size * subfamily_weight, na.rm = TRUE) / 
-      sum(subfamily_weight, na.rm = TRUE)
+    weighted_mean =
+      sum(avg_other_subfamily_size * subfamily_weight, na.rm = TRUE) /
+      sum(subfamily_weight, na.rm = TRUE),
+    .groups = "drop"
   ) |>
   collect() |>
   arrange(YEAR)
 
-hhsize_decade_cps
-nchild_decade_cps
-spouse_decade_cps
-nsubfamily_decade_cps
-othersubfamilysize_decade_cps
+# ================================
+# Combine into final table
+# ================================
 
 combined_cps <- hhsize_decade_cps |>
   select(YEAR, weighted_count, count, hhsize = weighted_mean) |>
@@ -82,11 +106,24 @@ combined_cps <- hhsize_decade_cps |>
     by = "YEAR"
   ) |>
   left_join(
-    othersubfamilysize_decade_cps |> select(YEAR, avg_other_subfamily_size = weighted_mean),
+    othersubfamilysize_decade_cps |>
+      select(YEAR, avg_other_subfamily_size = weighted_mean),
+    by = "YEAR"
+  ) |>
+  left_join(
+    is_multifamily_decade_cps |>
+      select(YEAR, fraction_multifamily),
     by = "YEAR"
   ) |>
   mutate(
-    calculated_hhsize = 1 + n_child + n_spouse + n_other_subfamily * avg_other_subfamily_size
+    n_other_subfamily_members = n_other_subfamily * avg_other_subfamily_size,
+    calculated_hhsize =
+      1 + n_child + n_spouse + n_other_subfamily_members
   )
 
 combined_cps
+
+readr::write_csv(
+  combined_cps,
+  "output/five-decade-tables/raw/combined_cps.csv"
+)
