@@ -18,13 +18,27 @@ ipums_person <- tbl(con, "ipums_person") |>
 # ================================
 # Raw crosstabs
 # ================================
-
+# ---  Overall
 crowded_decade_usa <- crosstab_percent(
   data = ipums_person |> filter(GQ %in% c(0, 1, 2)),
   wt_col = "PERWT",
   group_by = c("crowded", "YEAR"),
   percent_group_by = c("YEAR")
 )
+
+crowded_overall <- crowded_decade_usa |>
+  filter(crowded) |>
+  select(-crowded) |>
+  mutate(YEAR = dplyr::recode(YEAR, `2012` = 2010L, `2022` = 2020L)) |>
+  rename(percent_crowded = percent) |>
+  arrange(YEAR)
+
+readr::write_csv(
+  crowded_overall,
+  "output/five-decade-tables/raw/crowded_overall.csv"
+)
+
+# --- By Race
 
 crowded_race_decade_usa <- crosstab_percent(
   data = ipums_person |> filter(GQ %in% c(0, 1, 2)),
@@ -33,12 +47,40 @@ crowded_race_decade_usa <- crosstab_percent(
   percent_group_by = c("YEAR", "race_eth")
 )
 
+crowded_race <- crowded_race_decade_usa |>
+  filter(crowded) |>
+  select(-crowded) |> 
+  mutate(YEAR = dplyr::recode(YEAR, `2012` = 2010L, `2022` = 2020L)) |>
+  rename(percent_crowded = percent) |>
+  arrange(YEAR)
+
+readr::write_csv(
+  crowded_race,
+  "output/five-decade-tables/raw/crowded_race.csv"
+)
+
+# --- By Tenure
+
 crowded_tenure_decade_usa <- crosstab_percent(
   data = ipums_person |> filter(GQ %in% c(0, 1, 2)),
   wt_col = "PERWT",
   group_by = c("tenure", "crowded", "YEAR"),
   percent_group_by = c("YEAR", "tenure")
 )
+
+crowded_tenure <- crowded_tenure_decade_usa |>
+  filter(crowded) |>
+  select(-crowded) |>
+  mutate(YEAR = dplyr::recode(YEAR, `2012` = 2010L, `2022` = 2020L)) |>
+  rename(percent_crowded = percent) |>
+  arrange(YEAR)
+
+readr::write_csv(
+  crowded_tenure,
+  "output/five-decade-tables/raw/crowded_tenure.csv"
+)
+
+# --- By Birthplace
 
 crowded_birthplace_decade_usa <- crosstab_percent(
   data = ipums_person |> filter(GQ %in% c(0, 1, 2)),
@@ -47,11 +89,19 @@ crowded_birthplace_decade_usa <- crosstab_percent(
   percent_group_by = c("YEAR", "birthplace")
 )
 
-# ================================
-# Income (ADULTS ONLY)
-# ================================
-# Income is undefined for most children; to keep denominators meaningful,
-# all income-stratified analyses are restricted to AGE >= 18.
+crowded_birthplace <- crowded_birthplace_decade_usa |>
+  filter(crowded) |>
+  select(-crowded) |>
+  mutate(YEAR = dplyr::recode(YEAR, `2012` = 2010L, `2022` = 2020L)) |>
+  rename(percent_crowded = percent) |>
+  arrange(YEAR)
+
+readr::write_csv(
+  crowded_birthplace,
+  "output/five-decade-tables/raw/crowded_birthplace.csv"
+)
+
+# --- By Income, ADULTS ONLY
 
 ipums_person_adults <- ipums_person |>
   filter(AGE >= 18)
@@ -61,6 +111,18 @@ crowded_income_decade_usa <- crosstab_percent(
   wt_col = "PERWT",
   group_by = c("inctot_binned", "crowded", "YEAR"),
   percent_group_by = c("YEAR", "inctot_binned")
+)
+
+crowded_income_adults <- crowded_income_decade_usa |>
+  filter(crowded) |>
+  select(-crowded) |>
+  mutate(YEAR = dplyr::recode(YEAR, `2012` = 2010L, `2022` = 2020L)) |>
+  rename(percent_crowded = percent) |>
+  arrange(YEAR)
+
+readr::write_csv(
+  crowded_income_adults,
+  "output/five-decade-tables/raw/crowded_income_adults.csv"
 )
 
 # ================================
