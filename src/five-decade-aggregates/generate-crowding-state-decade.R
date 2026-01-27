@@ -1,21 +1,20 @@
 # ----- Step 0: ACS ----- #
-library("dplyr")
-library("duckdb")
-library("dbplyr")
-library("ggplot2")
-library("readr")
-library("tidyr")
-library("writexl")
+library(dplyr)
+library(duckdb)
+library(dbplyr)
+library(readr)
+library(tidyr)
+library(writexl)
 
 devtools::load_all("../demographr")
 
 # ================================
-# Helpers: STATEFIPS -> state name
+# Helpers: STATEFIP -> state name
 # ================================
 
 state_lookup <- function(include_pr = FALSE, include_groups = FALSE) {
   x <- tibble::tribble(
-    ~STATEFIPS, ~state_name,
+    ~STATEFIP, ~state_name,
     1L,  "Alabama",
     2L,  "Alaska",
     4L,  "Arizona",
@@ -70,14 +69,14 @@ state_lookup <- function(include_pr = FALSE, include_groups = FALSE) {
   )
   
   if (include_pr) {
-    x <- dplyr::bind_rows(x, tibble::tibble(STATEFIPS = 72L, state_name = "Puerto Rico"))
+    x <- bind_rows(x, tibble(STATEFIP = 72L, state_name = "Puerto Rico"))
   }
   
   if (include_groups) {
-    x <- dplyr::bind_rows(
+    x <- bind_rows(
       x,
       tibble::tribble(
-        ~STATEFIPS, ~state_name,
+        ~STATEFIP, ~state_name,
         61L, "Maine-New Hampshire-Vermont (group)",
         62L, "Massachusetts-Rhode Island (group)",
         63L, "MN-IA-MO-KS-NE-SD-ND (group)",
@@ -95,25 +94,20 @@ state_lookup <- function(include_pr = FALSE, include_groups = FALSE) {
   x
 }
 
-add_state_names <- function(df, statefips_col = "STATEFIPS", include_pr = FALSE, include_groups = FALSE) {
+add_state_names <- function(df, statefip_col = "STATEFIP",
+                            include_pr = FALSE, include_groups = FALSE) {
   lookup <- state_lookup(include_pr = include_pr, include_groups = include_groups)
   
   df |>
-    mutate(
-      STATEFIPS_int = as.integer(.data[[statefips_col]])
-    ) |>
-    left_join(
-      lookup,
-      by = c("STATEFIPS_int" = "STATEFIPS")
-    ) |>
-    rename(STATEFIPS = STATEFIPS_int)
+    mutate(STATEFIP = as.integer(.data[[statefip_col]])) |>
+    left_join(lookup, by = "STATEFIP")
 }
 
 clean_ipums_years <- function(df, year_col = "YEAR") {
   df |>
     mutate(
-      "{year_col}" := dplyr::recode(
-        .data[[year_col]],
+      !!year_col := recode(
+        as.integer(.data[[year_col]]),
         `2012` = 2010L,
         `2022` = 2020L
       )
@@ -128,8 +122,7 @@ ipums_person <- tbl(con, "ipums_person") |>
 
 base_data <- ipums_person |> filter(GQ %in% c(0, 1, 2))
 
-# ----- Step 2: Calculate aggregates ----- #
-
+# ----- Step 2: Outputs ----- #
 out_dir <- "output/five-decade-tables/raw"
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 
@@ -144,13 +137,11 @@ hhsize_state_decade <- crosstab_mean(
 ) |>
   collect() |>
   clean_ipums_years("YEAR") |>
-  add_state_names(statefips_col = "STATEFIP", include_groups = TRUE) |>
+  add_state_names(include_groups = TRUE) |>
   arrange(YEAR, state_name)
 
-write_csv(
-  hhsize_state_decade,
-  file.path(out_dir, "hhsize_state_decade.csv")
-)
+write_csv(hhsize_state_decade,
+          file.path(out_dir, "hhsize_state_decade.csv"))
 
 # ----------------------------
 # Bedrooms
@@ -163,13 +154,11 @@ bedroom_state_decade <- crosstab_mean(
 ) |>
   collect() |>
   clean_ipums_years("YEAR") |>
-  add_state_names(statefips_col = "STATEFIP", include_groups = TRUE) |>
+  add_state_names(include_groups = TRUE) |>
   arrange(YEAR, state_name)
 
-write_csv(
-  bedroom_state_decade,
-  file.path(out_dir, "bedroom_state_decade.csv")
-)
+write_csv(bedroom_state_decade,
+          file.path(out_dir, "bedroom_state_decade.csv"))
 
 # ----------------------------
 # Persons per bedroom (ppbr)
@@ -182,11 +171,11 @@ ppbr_state_decade <- crosstab_mean(
 ) |>
   collect() |>
   clean_ipums_years("YEAR") |>
-  add_state_names(statefips_col = "STATEFIP", include_groups = TRUE) |>
+  add_state_names(include_groups = TRUE) |>
   arrange(YEAR, state_name)
 
-write_csv(
-  ppbr_state_decade,
-  file.path(out_dir, "ppbr_state_decade.csv")
-)
+write_csv(ppbr_state_decade,
+          file.path(out_dir, "ppbr_state_decade.csv"))
+
+dbDisconnect(con)
 
