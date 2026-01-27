@@ -67,7 +67,8 @@ income_levels <- c(
 # ----- Step 1: Connect to DB ----- #
 con <- dbConnect(duckdb::duckdb(), "data/five-decade-db/ipums.duckdb")
 
-ipums_person <- tbl(con, "ipums_person")
+ipums_person <- tbl(con, "ipums_person") |>
+  mutate(crowded = ppbr > 2)
 
 base_data <- ipums_person |> filter(GQ %in% c(0, 1, 2))
 
