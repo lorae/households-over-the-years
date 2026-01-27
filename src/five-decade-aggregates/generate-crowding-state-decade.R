@@ -109,13 +109,84 @@ add_state_names <- function(df, statefips_col = "STATEFIPS", include_pr = FALSE,
     rename(STATEFIPS = STATEFIPS_int)
 }
 
-# -----
+clean_ipums_years <- function(df, year_col = "YEAR") {
+  df |>
+    mutate(
+      "{year_col}" := dplyr::recode(
+        .data[[year_col]],
+        `2012` = 2010L,
+        `2022` = 2020L
+      )
+    )
+}
 
 # ----- Step 1: Connect to DB ----- #
-con <- dbConnect(duckdb::duckdb(), "data/db/ipums.duckdb")
+con <- dbConnect(duckdb::duckdb(), "data/five-decade-db/ipums.duckdb")
 
 ipums_person <- tbl(con, "ipums_person") |>
   mutate(crowded = ppbr > 2)
 
 base_data <- ipums_person |> filter(GQ %in% c(0, 1, 2))
+
+# ----- Step 2: Calculate aggregates ----- #
+
+out_dir <- "output/five-decade-tables/raw"
+dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
+
+# ----------------------------
+# Household size (NUMPREC)
+# ----------------------------
+hhsize_state_decade <- crosstab_mean(
+  data = base_data,
+  value = "NUMPREC",
+  wt_col = "PERWT",
+  group_by = c("STATEFIP", "YEAR")
+) |>
+  collect() |>
+  clean_ipums_years("YEAR") |>
+  add_state_names(statefips_col = "STATEFIP", include_groups = TRUE) |>
+  arrange(YEAR, state_name)
+
+write_csv(
+  hhsize_state_decade,
+  file.path(out_dir, "hhsize_state_decade.csv")
+)
+
+# ----------------------------
+# Bedrooms
+# ----------------------------
+bedroom_state_decade <- crosstab_mean(
+  data = base_data,
+  value = "bedroom",
+  wt_col = "PERWT",
+  group_by = c("STATEFIP", "YEAR")
+) |>
+  collect() |>
+  clean_ipums_years("YEAR") |>
+  add_state_names(statefips_col = "STATEFIP", include_groups = TRUE) |>
+  arrange(YEAR, state_name)
+
+write_csv(
+  bedroom_state_decade,
+  file.path(out_dir, "bedroom_state_decade.csv")
+)
+
+# ----------------------------
+# Persons per bedroom (ppbr)
+# ----------------------------
+ppbr_state_decade <- crosstab_mean(
+  data = base_data,
+  value = "ppbr",
+  wt_col = "PERWT",
+  group_by = c("STATEFIP", "YEAR")
+) |>
+  collect() |>
+  clean_ipums_years("YEAR") |>
+  add_state_names(statefips_col = "STATEFIP", include_groups = TRUE) |>
+  arrange(YEAR, state_name)
+
+write_csv(
+  ppbr_state_decade,
+  file.path(out_dir, "ppbr_state_decade.csv")
+)
 
