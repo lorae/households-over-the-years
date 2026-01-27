@@ -1,8 +1,8 @@
 # process-person-level-ipums.R
 #
 # This script adds bucket columns to raw (person-level) data.
-# It reads data from the "ipums" table in `/db/ipums-raw.duckdb` and writes processed
-# data to the "ipums-bucketed" table in `/db/ipums-processed.duckdb`.
+# It reads data from the "ipums" table in `/five-decade-db/ipums.duckdb` and writes processed
+# data to the "ipums-bucketed" table in `/five-decade-db/ipums-processed.duckdb`.
 #
 # ----- Step 0: Configuration ----- #
 library("dplyr")
@@ -12,9 +12,14 @@ library("dbplyr")
 
 devtools::load_all("../demographr")
 
+# ----- Step 0.5: Load helper data ----- #
+inflators <- read_csv("reference/inflators-1970-2020.csv") |>
+  distinct(YEAR, .keep_all = TRUE) |>
+  mutate(YEAR = as.integer(YEAR))
+
 # ----- Step 1: Connect to the database ----- #
 
-con <- dbConnect(duckdb::duckdb(), "data/db/ipums.duckdb")
+con <- dbConnect(duckdb::duckdb(), "data/five-decade-db/ipums.duckdb")
 ipums_db <- tbl(con, "ipums")
 
 # For data validation: count number of rows, to ensure none are dropped later
@@ -25,7 +30,11 @@ obs_count <- ipums_db |>
 
 # ----- Step 2: Add columns ----- #
 
+# Make inflators available inside DuckDB
+inflators_db <- copy_to(con, inflators, name = "inflators", temporary = TRUE, overwrite = TRUE)
+
 ipums_person <- ipums_db |>
+  left_join(inflators_db, by = "YEAR") |>
   mutate(
     # Top-code at 5, since 1940- 1970 has most restrictive top-code
     n_multifam = case_when(
@@ -91,8 +100,49 @@ ipums_person <- ipums_db |>
       race_bucket == "multi" ~ "Multiracial",
       race_bucket == "white" ~ "White",
       race_bucket == "other" ~ "Other"
+    ),
+    tenure = case_when(
+      OWNERSHP == 0 ~ NA_character_,
+      OWNERSHP == 1 ~ "owner",
+      OWNERSHP == 2 ~ "renter"
+    ),
+    birthplace = case_when(
+      BPL <= 120 ~ "U.S.-born",
+      BPL > 120 ~ "foreign-born"
+    ),
+    owncost_2020 = case_when(
+      OWNCOST == 99999 ~ NA_real_,
+      is.na(inflator_2020) ~ NA_real_,
+      TRUE ~ OWNCOST * inflator_2020
+    ),
+    hhincome_2020 = case_when(
+      HHINCOME == 99999 ~ NA_real_,
+      is.na(inflator_2020) ~ NA_real_,
+      TRUE ~ HHINCOME * inflator_2020
+    ),
+    inctot_2020 = case_when(
+      INCTOT == -9995 & YEAR == 1980 ~ -9900,
+      INCTOT == 0 ~ 0,
+      INCTOT == 1 ~ 0,
+      INCTOT == 9999999 ~ NA_real_,
+      INCTOT == 9999998 ~ NA_real_,
+      TRUE ~ INCTOT * inflator_2020
+    ),
+    # Apply universal top and bottom codes, documented in reference/inflators-1970-2020.xlsx
+    inctot_2020_harmonized = case_when(
+      inctot_2020 >= 260000 ~ 260000,
+      inctot_2020 <= -16000 ~ -16000,
+      TRUE ~ inctot_2020
+    ),
+    # Bin inctot_2020_harmonized variable
+    inctot_binned = case_when(
+      is.na(inctot_2020_harmonized) ~ NA_character_,
+      inctot_2020_harmonized < 50000 ~ "less than $50,000",
+      inctot_2020_harmonized >= 50000 & inctot_2020_harmonized <100000 ~ "$50,000 - $99,999",
+      inctot_2020_harmonized >= 100000 & inctot_2020_harmonized <150000 ~ "$100,000 - $149,999",
+      inctot_2020_harmonized >= 150000 ~ "$150,000 and greater"
     )
-  )
+  ) 
 
 # ----- Step 3: Compute, save, close out the connection ----- #
 

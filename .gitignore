@@ -3,6 +3,7 @@ data/raw-microdata/**
 !data/raw-microdata/.gitkeep
 data/db/**
 !data/db/.gitkeep
+data/five-decade-db/**
 
 # ignore contents of throughput, but preserve file structure
 throughput/**
