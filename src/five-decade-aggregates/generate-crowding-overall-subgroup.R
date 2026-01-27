@@ -67,7 +67,7 @@ race_levels <- c(
 
 tenure_levels <- c("owner", "renter")
 
-birthplace_levels <- c("U.S.-born", "Foreign-born")
+birthplace_levels <- c("U.S.-born", "foreign-born")
 
 income_levels <- c(
   "less than $50,000",
