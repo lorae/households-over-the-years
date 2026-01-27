@@ -1,3 +1,4 @@
+
 # ----- Step 0: ACS ----- #
 library("dplyr")
 library("duckdb")
@@ -9,6 +10,23 @@ library("writexl")
 
 devtools::load_all("../demographr")
 
+# ================================
+# Helpers
+# ================================
+
+clean_crowding_output <- function(df) {
+  df |>
+    filter(crowded) |>
+    select(-crowded) |>
+    mutate(
+      YEAR = dplyr::recode(YEAR, `2012` = 2010L, `2022` = 2020L)
+    ) |>
+    rename(percent_crowded = percent) |>
+    arrange(YEAR)
+}
+
+years <- c(1970, 1980, 1990, 2000, 2010, 2020)
+
 # ----- Step 1: Connect to DB ----- #
 con <- dbConnect(duckdb::duckdb(), "data/five-decade-db/ipums.duckdb")
 
@@ -18,125 +36,200 @@ ipums_person <- tbl(con, "ipums_person") |>
 # ================================
 # Raw crosstabs
 # ================================
-# ---  Overall
+
+base_data <- ipums_person |> filter(GQ %in% c(0, 1, 2))
+
+# ====================
+# --- Overall ---
+# ====================
+
+# crowded
 crowded_decade_usa <- crosstab_percent(
-  data = ipums_person |> filter(GQ %in% c(0, 1, 2)),
+  data = base_data,
   wt_col = "PERWT",
   group_by = c("crowded", "YEAR"),
   percent_group_by = c("YEAR")
 )
 
-crowded_overall <- crowded_decade_usa |>
-  filter(crowded) |>
-  select(-crowded) |>
-  mutate(YEAR = dplyr::recode(YEAR, `2012` = 2010L, `2022` = 2020L)) |>
-  rename(percent_crowded = percent) |>
-  arrange(YEAR)
+crowded_overall <- clean_crowding_output(crowded_decade_usa)
 
 readr::write_csv(
   crowded_overall,
   "output/five-decade-tables/raw/crowded_overall.csv"
 )
 
-# --- By Race
+# persons per bedroom
+ppbr_decade_usa <- crosstab_mean(
+  data = base_data,
+  value = "ppbr",
+  wt_col = "PERWT",
+  group_by = "YEAR"
+)
 
+ppbr_overall <- ppbr_decade_usa |>
+  mutate(YEAR = dplyr::recode(YEAR, `2012` = 2010L, `2022` = 2020L)) |>
+  rename(persons_per_bedroom = weighted_mean) |>
+  arrange(YEAR)
+
+readr::write_csv(
+  ppbr_overall,
+  "output/five-decade-tables/raw/ppbr_overall.csv"
+)
+
+# ====================
+# --- By Race ---
+# ====================
+
+# crowded
 crowded_race_decade_usa <- crosstab_percent(
-  data = ipums_person |> filter(GQ %in% c(0, 1, 2)),
+  data = base_data,
   wt_col = "PERWT",
   group_by = c("race_eth", "crowded", "YEAR"),
   percent_group_by = c("YEAR", "race_eth")
 )
 
-crowded_race <- crowded_race_decade_usa |>
-  filter(crowded) |>
-  select(-crowded) |> 
-  mutate(YEAR = dplyr::recode(YEAR, `2012` = 2010L, `2022` = 2020L)) |>
-  rename(percent_crowded = percent) |>
-  arrange(YEAR)
+crowded_race <- clean_crowding_output(crowded_race_decade_usa)
 
 readr::write_csv(
   crowded_race,
   "output/five-decade-tables/raw/crowded_race.csv"
 )
 
-# --- By Tenure
+# persons per bedroom
+ppbr_race_decade_usa <- crosstab_mean(
+  data = base_data,
+  value = "ppbr",
+  wt_col = "PERWT",
+  group_by = c("race_eth", "YEAR")
+)
 
+ppbr_race <- ppbr_race_decade_usa |>
+  mutate(YEAR = dplyr::recode(YEAR, `2012` = 2010L, `2022` = 2020L)) |>
+  rename(persons_per_bedroom = weighted_mean) |>
+  arrange(YEAR)
+
+readr::write_csv(
+  ppbr_race,
+  "output/five-decade-tables/raw/ppbr_race.csv"
+)
+
+# ====================
+# --- By Tenure ---
+# ====================
+
+# crowded
 crowded_tenure_decade_usa <- crosstab_percent(
-  data = ipums_person |> filter(GQ %in% c(0, 1, 2)),
+  data = base_data,
   wt_col = "PERWT",
   group_by = c("tenure", "crowded", "YEAR"),
   percent_group_by = c("YEAR", "tenure")
 )
 
-crowded_tenure <- crowded_tenure_decade_usa |>
-  filter(crowded) |>
-  select(-crowded) |>
-  mutate(YEAR = dplyr::recode(YEAR, `2012` = 2010L, `2022` = 2020L)) |>
-  rename(percent_crowded = percent) |>
-  arrange(YEAR)
+crowded_tenure <- clean_crowding_output(crowded_tenure_decade_usa)
 
 readr::write_csv(
   crowded_tenure,
   "output/five-decade-tables/raw/crowded_tenure.csv"
 )
 
-# --- By Birthplace
+# persons per bedroom
+ppbr_tenure_decade_usa <- crosstab_mean(
+  data = base_data,
+  value = "ppbr",
+  wt_col = "PERWT",
+  group_by = c("tenure", "YEAR")
+)
 
+ppbr_tenure <- ppbr_tenure_decade_usa |>
+  mutate(YEAR = dplyr::recode(YEAR, `2012` = 2010L, `2022` = 2020L)) |>
+  rename(persons_per_bedroom = weighted_mean) |>
+  arrange(YEAR)
+
+readr::write_csv(
+  ppbr_tenure,
+  "output/five-decade-tables/raw/ppbr_tenure.csv"
+)
+
+# ====================
+# --- By Birthplace ---
+# ====================
+
+# crowded
 crowded_birthplace_decade_usa <- crosstab_percent(
-  data = ipums_person |> filter(GQ %in% c(0, 1, 2)),
+  data = base_data,
   wt_col = "PERWT",
   group_by = c("birthplace", "crowded", "YEAR"),
   percent_group_by = c("YEAR", "birthplace")
 )
 
-crowded_birthplace <- crowded_birthplace_decade_usa |>
-  filter(crowded) |>
-  select(-crowded) |>
-  mutate(YEAR = dplyr::recode(YEAR, `2012` = 2010L, `2022` = 2020L)) |>
-  rename(percent_crowded = percent) |>
-  arrange(YEAR)
+crowded_birthplace <- clean_crowding_output(crowded_birthplace_decade_usa)
 
 readr::write_csv(
   crowded_birthplace,
   "output/five-decade-tables/raw/crowded_birthplace.csv"
 )
 
-# --- By Income, ADULTS ONLY
+# persons per bedroom
+ppbr_birthplace_decade_usa <- crosstab_mean(
+  data = base_data,
+  value = "ppbr",
+  wt_col = "PERWT",
+  group_by = c("birthplace", "YEAR")
+)
+
+ppbr_birthplace <- ppbr_birthplace_decade_usa |>
+  mutate(YEAR = dplyr::recode(YEAR, `2012` = 2010L, `2022` = 2020L)) |>
+  rename(persons_per_bedroom = weighted_mean) |>
+  arrange(YEAR)
+
+readr::write_csv(
+  ppbr_birthplace,
+  "output/five-decade-tables/raw/ppbr_birthplace.csv"
+)
+
+# ====================
+# --- By Income, ADULTS ONLY ---
+# ====================
 
 ipums_person_adults <- ipums_person |>
   filter(AGE >= 18)
 
+base_data_adults <- ipums_person_adults |> filter(GQ %in% c(0, 1, 2))
+
+# crowded
 crowded_income_decade_usa <- crosstab_percent(
-  data = ipums_person_adults |> filter(GQ %in% c(0, 1, 2)),
+  data = base_data_adults,
   wt_col = "PERWT",
   group_by = c("inctot_binned", "crowded", "YEAR"),
   percent_group_by = c("YEAR", "inctot_binned")
 )
 
-crowded_income_adults <- crowded_income_decade_usa |>
-  filter(crowded) |>
-  select(-crowded) |>
-  mutate(YEAR = dplyr::recode(YEAR, `2012` = 2010L, `2022` = 2020L)) |>
-  rename(percent_crowded = percent) |>
-  arrange(YEAR)
+crowded_income_adults <- clean_crowding_output(crowded_income_decade_usa)
 
 readr::write_csv(
   crowded_income_adults,
   "output/five-decade-tables/raw/crowded_income_adults.csv"
 )
 
-# ================================
-# Helpers
-# ================================
+# persons per bedroom
+ppbr_income_decade_usa <- crosstab_mean(
+  data = base_data_adults,
+  value = "ppbr",
+  wt_col = "PERWT",
+  group_by = c("inctot_binned", "YEAR")
+)
 
-clean_years <- function(df) {
-  df |>
-    mutate(YEAR = ifelse(YEAR == 2012, 2010, YEAR)) |>
-    mutate(YEAR = ifelse(YEAR == 2022, 2020, YEAR))
-}
+ppbr_income_adults <- ppbr_income_decade_usa |>
+  mutate(YEAR = dplyr::recode(YEAR, `2012` = 2010L, `2022` = 2020L)) |>
+  rename(persons_per_bedroom = weighted_mean) |>
+  arrange(YEAR)
 
-years <- c(1970, 1980, 1990, 2000, 2010, 2020)
+readr::write_csv(
+  ppbr_income_adults,
+  "output/five-decade-tables/raw/ppbr_income_adults.csv"
+)
 
+# ------ Old
 # ================================
 # 1. Overall crowding
 # ================================
