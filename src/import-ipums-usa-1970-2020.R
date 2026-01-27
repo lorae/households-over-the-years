@@ -53,7 +53,7 @@ ipums_extract <- define_extract_micro(
   variables = c(
     # Household-level
     "NUMPREC", "OWNERSHP", "KITCHEN", "ROOMS", "UNITSSTR", "BEDROOMS", "NFAMS",
-    "HHINCOME", "RENT", "OWNCOST",
+    "HHINCOME", "RENT", "OWNCOST", "STATEFIP",
     # Person-level
     "PERNUM", "PERWT", "RELATE", "SEX", "AGE", "RACE", "HISPAN", 
     "SUBFAM", "EMPSTAT", "INCTOT", "BPL"
