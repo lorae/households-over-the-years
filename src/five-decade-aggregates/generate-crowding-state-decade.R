@@ -16,3 +16,105 @@ ipums_person <- tbl(con, "ipums_person") |>
   mutate(crowded = ppbr > 2)
 
 base_data <- ipums_person |> filter(GQ %in% c(0, 1, 2))
+
+# ================================
+# Helpers: STATEFIPS -> state name
+# ================================
+
+state_lookup <- function(include_pr = FALSE, include_groups = FALSE) {
+  x <- tibble::tribble(
+    ~STATEFIPS, ~state_name,
+    1L,  "Alabama",
+    2L,  "Alaska",
+    4L,  "Arizona",
+    5L,  "Arkansas",
+    6L,  "California",
+    8L,  "Colorado",
+    9L,  "Connecticut",
+    10L, "Delaware",
+    11L, "District of Columbia",
+    12L, "Florida",
+    13L, "Georgia",
+    15L, "Hawaii",
+    16L, "Idaho",
+    17L, "Illinois",
+    18L, "Indiana",
+    19L, "Iowa",
+    20L, "Kansas",
+    21L, "Kentucky",
+    22L, "Louisiana",
+    23L, "Maine",
+    24L, "Maryland",
+    25L, "Massachusetts",
+    26L, "Michigan",
+    27L, "Minnesota",
+    28L, "Mississippi",
+    29L, "Missouri",
+    30L, "Montana",
+    31L, "Nebraska",
+    32L, "Nevada",
+    33L, "New Hampshire",
+    34L, "New Jersey",
+    35L, "New Mexico",
+    36L, "New York",
+    37L, "North Carolina",
+    38L, "North Dakota",
+    39L, "Ohio",
+    40L, "Oklahoma",
+    41L, "Oregon",
+    42L, "Pennsylvania",
+    44L, "Rhode Island",
+    45L, "South Carolina",
+    46L, "South Dakota",
+    47L, "Tennessee",
+    48L, "Texas",
+    49L, "Utah",
+    50L, "Vermont",
+    51L, "Virginia",
+    53L, "Washington",
+    54L, "West Virginia",
+    55L, "Wisconsin",
+    56L, "Wyoming"
+  )
+  
+  if (include_pr) {
+    x <- dplyr::bind_rows(x, tibble::tibble(STATEFIPS = 72L, state_name = "Puerto Rico"))
+  }
+  
+  if (include_groups) {
+    x <- dplyr::bind_rows(
+      x,
+      tibble::tribble(
+        ~STATEFIPS, ~state_name,
+        61L, "Maine-New Hampshire-Vermont (group)",
+        62L, "Massachusetts-Rhode Island (group)",
+        63L, "MN-IA-MO-KS-NE-SD-ND (group)",
+        64L, "Maryland-Delaware (group)",
+        65L, "Montana-Idaho-Wyoming (group)",
+        66L, "Utah-Nevada (group)",
+        67L, "Arizona-New Mexico (group)",
+        68L, "Alaska-Hawaii (group)",
+        97L, "Overseas Military Installations",
+        99L, "State not identified"
+      )
+    )
+  }
+  
+  x
+}
+
+add_state_names <- function(df, statefips_col = "STATEFIPS", include_pr = FALSE, include_groups = FALSE) {
+  lookup <- state_lookup(include_pr = include_pr, include_groups = include_groups)
+  
+  df |>
+    mutate(
+      STATEFIPS_int = as.integer(.data[[statefips_col]])
+    ) |>
+    left_join(
+      lookup,
+      by = c("STATEFIPS_int" = "STATEFIPS")
+    ) |>
+    rename(STATEFIPS = STATEFIPS_int)
+}
+
+# -----
