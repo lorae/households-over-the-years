@@ -33,8 +33,8 @@ p <- ggplot(
   scale_y_continuous(labels = percent_format(scale = 1)) +
   labs(
     x = "Age group",
-    y = "% crowded",
-    color = "Decade"
+    y = "% Crowded",
+    color = "Year"
   ) +
   theme_minimal()
 
