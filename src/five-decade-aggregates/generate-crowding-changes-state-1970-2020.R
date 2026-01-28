@@ -94,5 +94,5 @@ crowded_change <- build_change_table(ppbr_state_decade, "percent_crowded")
 
 write_csv(
   ppbr_change,
-  file.path(out_dir, "ppbr_state_change_1970_2020.csv")
+  file.path(out_dir, "crowded_state_change_1970_2020.csv")
 )
