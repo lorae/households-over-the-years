@@ -90,7 +90,7 @@ crowded_state_decade <- read_csv(
   show_col_types = FALSE
 )
 
-crowded_change <- build_change_table(ppbr_state_decade, "")
+crowded_change <- build_change_table(ppbr_state_decade, "percent_crowded")
 
 write_csv(
   ppbr_change,
