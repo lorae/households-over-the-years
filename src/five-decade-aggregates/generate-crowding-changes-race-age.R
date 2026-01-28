@@ -100,4 +100,68 @@ write_csv(
 )
 
 
+# ----------------------------
+# Change in persons per bedroom (ppbr)
+# ----------------------------
+ppbr_race_age_change <- ppbr_race_age_decade_combined |>
+  filter(YEAR %in% c(1970, 2020)) |>
+  select(
+    race_eth,
+    age_bucket,
+    YEAR,
+    count,
+    weighted_count,
+    ppbr = weighted_mean
+  ) |>
+  pivot_wider(
+    names_from = YEAR,
+    values_from = c(count, weighted_count, ppbr),
+    names_sep = "_"
+  ) |>
+  mutate(
+    change_ppbr = ppbr_2020 - ppbr_1970,
+    pct_change_ppbr = 100 * change_ppbr / ppbr_1970
+  ) |>
+  arrange(race_eth, age_bucket) |>
+  filter(race_eth != "Multiracial") # does not exist in 1970
+
+ppbr_race_age_change
+
+write_csv(
+  ppbr_race_age_change,
+  file.path(out_dir, "ppbr_race_age_change_1970_2020.csv")
+)
+
+# ----------------------------
+# Change in % crowded
+# ----------------------------
+crowded_race_age_change <- crowded_race_age_decade_combined |>
+  filter(YEAR %in% c(1970, 2020)) |>
+  select(
+    race_eth,
+    age_bucket,
+    YEAR,
+    count,
+    weighted_count,
+    pct_crowded = percent
+  ) |>
+  pivot_wider(
+    names_from = YEAR,
+    values_from = c(count, weighted_count, pct_crowded),
+    names_sep = "_"
+  ) |>
+  mutate(
+    change_pct_crowded = pct_crowded_2020 - pct_crowded_1970,
+    pct_change_pct_crowded = 100 * change_pct_crowded / pct_crowded_1970
+  ) |>
+  arrange(race_eth, age_bucket) |>
+  filter(race_eth != "Multiracial")  # does not exist in 1970
+
+crowded_race_age_change
+
+write_csv(
+  crowded_race_age_change,
+  file.path(out_dir, "crowded_race_age_change_1970_2020.csv")
+)
+
 dbDisconnect(con)
