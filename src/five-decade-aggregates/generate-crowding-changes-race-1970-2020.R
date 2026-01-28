@@ -2,6 +2,9 @@ library(dplyr)
 library(readr)
 library(tidyr)
 
+out_dir <- "output/five-decade-tables/raw"
+dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
+
 # Read data (use repo-relative path, not the URL)
 ppbr_race <- readr::read_csv(
   "output/five-decade-tables/raw/ppbr_race.csv",
@@ -36,3 +39,8 @@ ppbr_final <- ppbr_wide |>
   arrange(race_eth)
 
 ppbr_final
+
+write_csv(
+  ppbr_final,
+  file.path(out_dir, "ppbr_race_change_1970_2020.csv")
+)
