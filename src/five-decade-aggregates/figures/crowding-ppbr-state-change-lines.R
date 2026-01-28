@@ -243,7 +243,7 @@ fig03
 ggsave(
   "output/five-decade-tables/state-ppbr-crowding-arrows.jpeg",
   plot = fig03,
-  width = 2000,
+  width = 3000,
   height = 4000,
   units = "px",
   dpi = 400
