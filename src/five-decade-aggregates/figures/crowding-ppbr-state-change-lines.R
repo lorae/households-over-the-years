@@ -14,12 +14,20 @@ options(scipen = 999)
 ppbr_state_change <- read_csv(
   "output/five-decade-tables/raw/ppbr_state_change_1970_2020.csv",
   show_col_types = FALSE
-)
+) |>
+  filter(
+    state_name != "State not identified",
+    !is.na(ppbr_1970)
+  )
 
 crowded_state_change <- read_csv(
   "output/five-decade-tables/raw/crowded_state_change_1970_2020.csv",
   show_col_types = FALSE
-)
+) |>
+  filter(
+    state_name != "State not identified",
+    !is.na(percent_crowded_1970)
+  )
 
 # ----- Step 2: Helpers ----- #
 
@@ -194,6 +202,7 @@ arrow_legend_plot <- ggplot(legend_arrow_df) +
     values = c("increase" = "darkblue", "decrease" = "darkred")
   ) +
   theme_void() +
+  theme(legend.position = "none") + 
   coord_cartesian(xlim = c(1.2, 2.1))
 
 # ----- Step 6: Build plots ----- #
@@ -206,31 +215,35 @@ p_ppbr <- make_arrowplot(
   ),
   arrow_data = arrow_ppbr,
   x_title = "Persons per Bedroom",
-  limits = c(0.5, 2.0)
+  limits = c(1, 2.5)
 )
 
 p_crowded <- make_arrowplot(
   dotplot_data = prep_dotplot_data(
     crowded_state_change,
     state_order,
-    value_prefix = "ppbr"
+    value_prefix = "percent_crowded"
   ),
   arrow_data = arrow_crowded,
-  x_title = "Crowded Households (PPBR)",
-  limits = c(0.5, 2.0),
+  x_title = "Crowded Households",
+  limits = c(0, 30),
   show_y_labels = FALSE
 )
 
 fig03 <- (p_ppbr + p_crowded) / arrow_legend_plot +
-  plot_layout(heights = c(1, 0.12))
+  plot_layout(heights = c(1, 0.12)) +
+  plot_annotation(
+    caption = "Wyoming, Vermont, South Dakota, North Dakota, Montana,\n
+    Idaho, and Delaware are excluded due to lack of data in 1970."
+    )
 
 fig03
 
 # ----- Step 7: Save ----- #
 ggsave(
-  "output/figures/fig03-state-ppbr-crowding-arrows.jpeg",
+  "output/five-decade-tables/state-ppbr-crowding-arrows.jpeg",
   plot = fig03,
-  width = 4000,
+  width = 2000,
   height = 4000,
   units = "px",
   dpi = 400

@@ -96,6 +96,6 @@ crowded_change <- build_change_table(
 )
 
 write_csv(
-  ppbr_change,
+  crowded_change,
   file.path(out_dir, "crowded_state_change_1970_2020.csv")
 )
