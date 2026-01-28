@@ -1,4 +1,4 @@
-STATEFIP,YEAR,weighted_count,count,percent,state_name
+STATEFIP,YEAR,weighted_count,count,percent_crowded,state_name
 1,1970,517400,5174,21.36074642886632,Alabama
 2,1970,64600,646,23.715124816446405,Alaska
 4,1970,366200,3662,21.275854055310248,Arizona

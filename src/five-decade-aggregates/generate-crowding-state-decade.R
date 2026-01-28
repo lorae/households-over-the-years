@@ -192,7 +192,8 @@ crowded_state_decade <- crosstab_percent(
   select(-crowded) |>
   clean_ipums_years("YEAR") |>
   add_state_names(include_groups = TRUE) |>
-  arrange(YEAR, state_name)
+  arrange(YEAR, state_name) |>
+  rename(crowded = percent)
 
 write_csv(crowded_state_decade,
           file.path(out_dir, "crowded_state_decade.csv"))

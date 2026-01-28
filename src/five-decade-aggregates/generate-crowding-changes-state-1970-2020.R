@@ -81,3 +81,18 @@ write_csv(
   ppbr_change,
   file.path(out_dir, "ppbr_state_change_1970_2020.csv")
 )
+
+# ----------------------------
+# % Crowded
+# ----------------------------
+crowded_state_decade <- read_csv(
+  file.path(out_dir, "crowded_state_decade.csv"),
+  show_col_types = FALSE
+)
+
+crowded_change <- build_change_table(ppbr_state_decade, "")
+
+write_csv(
+  ppbr_change,
+  file.path(out_dir, "ppbr_state_change_1970_2020.csv")
+)
