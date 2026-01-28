@@ -177,5 +177,25 @@ ppbr_state_decade <- crosstab_mean(
 write_csv(ppbr_state_decade,
           file.path(out_dir, "ppbr_state_decade.csv"))
 
+
+# ----------------------------
+# % Crowded
+# ----------------------------
+crowded_state_decade <- crosstab_percent(
+  data = base_data,
+  wt_col = "PERWT",
+  group_by = c("crowded", "STATEFIP", "YEAR"),
+  percent_group_by = c("STATEFIP", "YEAR")
+) |>
+  collect() |>
+  filter(crowded) |>
+  select(-crowded) |>
+  clean_ipums_years("YEAR") |>
+  add_state_names(include_groups = TRUE) |>
+  arrange(YEAR, state_name)
+
+write_csv(crowded_state_decade,
+          file.path(out_dir, "crowded_state_decade.csv"))
+
 dbDisconnect(con)
 
