@@ -8,7 +8,7 @@ out_dir <- "output/five-decade-tables/raw"
 # ----------------------------
 # Helper to build change tables
 # ----------------------------
-build_change_table <- function(df, value_name) {
+build_change_table <- function(df, value_name, value_col = weighted_mean) {
   df |>
     filter(YEAR %in% c(1970, 2020)) |>
     select(
@@ -17,7 +17,7 @@ build_change_table <- function(df, value_name) {
       YEAR,
       count,
       weighted_count,
-      value = weighted_mean
+      value = {{ value_col }}
     ) |>
     pivot_wider(
       names_from = YEAR,
@@ -36,7 +36,6 @@ build_change_table <- function(df, value_name) {
     ) |>
     arrange(state_name)
 }
-
 # ----------------------------
 # Household size
 # ----------------------------
@@ -90,7 +89,7 @@ crowded_state_decade <- read_csv(
   show_col_types = FALSE
 )
 
-crowded_change <- build_change_table(ppbr_state_decade, "percent_crowded")
+crowded_change <- build_change_table(crowded_state_decade, "percent_crowded")
 
 write_csv(
   ppbr_change,
