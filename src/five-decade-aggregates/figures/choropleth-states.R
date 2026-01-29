@@ -66,15 +66,20 @@ hhsize_change <- hhsize_change |>
   filter(STATEFIP <= 56)
 
 # ----------------------------
-# Join data to geometry
+# Read ppb table
 # ----------------------------
-
-map_data <- states_sf |>
-  left_join(hhsize_change, by = "STATEFIP")
+ppbr_2020 <- read_csv(
+  file.path(data_dir, "ppbr_state_decade.csv"),
+  show_col_types = FALSE
+) |> 
+  filter(YEAR == 2020)
 
 # ----------------------------
 # Choropleth: change in household size
 # ----------------------------
+
+map_data <- states_sf |>
+  left_join(hhsize_change, by = "STATEFIP")
 
 ggplot(map_data) +
   geom_sf(aes(fill = change_hhsize), color = "white", linewidth = 0.2) +
@@ -86,7 +91,7 @@ ggplot(map_data) +
     name = "Change in\nHH size\n(1970–2020)"
   ) +
   labs(
-    title = "Change in Average Household Size by State, 1970–2020",
+    title = "Average Household Size by State, 2020",
     subtitle = "Weighted mean household size",
     caption = "Source: IPUMS USA"
   ) +
@@ -96,3 +101,32 @@ ggplot(map_data) +
     axis.title = element_blank(),
     panel.grid = element_blank()
   )
+
+
+# ----------------------------
+# Choropleth: household size 2020
+# ----------------------------
+
+map_data <- states_sf |>
+  left_join(ppbr_2020, by = "STATEFIP")
+
+ggplot(map_data) +
+  geom_sf(aes(fill = weighted_mean), color = "black", linewidth = 0.2) +
+  scale_fill_gradient2(
+    low = "#4575b4",
+    mid = "white",
+    high = "#d73027",
+    midpoint = 1.19,
+    name = "Household size"
+  ) +
+  labs(
+    title = "People Per Bedroom by State, 2020",
+    caption = "Source: IPUMS USA"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text = element_blank(),
+    axis.title = element_blank(),
+    panel.grid = element_blank()
+  )
+
