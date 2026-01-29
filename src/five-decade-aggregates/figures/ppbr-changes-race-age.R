@@ -49,6 +49,12 @@ plot_data <- ppbr_change |>
 # ----------------------------
 # Split into left / right panels
 # ----------------------------
+y_var = change_ppbr
+
+y_min = -1.6
+y_max = 0
+y_by = 0.4
+
 left_races  <- race_order[c(1,3,5)]
 right_races <- race_order[c(2,4,6)]
 
@@ -88,8 +94,8 @@ left_plot <- ggplot(
     guide = "none"
   ) +
   scale_y_continuous(
-    breaks = seq(-50, 0, by = 10),
-    limits = c(-50, 0),
+    breaks = seq(from = y_min, to = y_max, by = y_by),
+    limits = c(y_min, y_max),
     labels = function(x) paste0(x),
     sec.axis = dup_axis(labels = function(x) paste0(x))
   ) +
@@ -105,7 +111,7 @@ left_plot <- ggplot(
     axis.text.x = element_text(angle = 30, hjust = 1, size = 8),
     axis.text.y.left = element_blank(),
     axis.ticks.y.left = element_blank(),
-    panel.grid.major.y = element_blank(),
+    panel.grid.minor.y = element_blank(),
     panel.grid.major.x = element_blank()
   ) +
   labs(x = NULL, y = NULL)
@@ -128,8 +134,8 @@ right_plot <- ggplot(
   geom_hline(yintercept = 0, linewidth = 0.6) +
   facet_grid(rows = vars(race_eth)) +
   scale_y_continuous(
-    breaks = seq(-50, 0, by = 10),
-    limits = c(-50, 0)
+    breaks = seq(from = y_min, to = y_max, by = y_by),
+    limits = c(y_min, y_max)
   ) +
   theme_minimal() +
   theme(
@@ -143,7 +149,7 @@ right_plot <- ggplot(
     axis.text.x = element_text(angle = 30, hjust = 1, size = 8),
     axis.text.y = element_blank(),
     axis.ticks.y = element_blank(),
-    panel.grid.major.y = element_blank(),
+    panel.grid.minor.y = element_blank(),
     panel.grid.major.x = element_blank(),
     plot.margin = margin(5, 5, 5, -10)
   ) +
