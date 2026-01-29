@@ -45,21 +45,24 @@ acs_hhsize <- crosstab_mean(
   value    = "NUMPREC",
   wt_col   = "PERWT",
   group_by = "YEAR"
-)
+) |>
+  rename(hhsize = weighted_mean)
 
 acs_bedrooms <- crosstab_mean(
   data     = acs_person,
   value    = "bedroom",
   wt_col   = "PERWT",
   group_by = "YEAR"
-)
+) |>
+  rename(bedroom = weighted_mean)
 
 acs_ppbr <- crosstab_mean(
   data     = acs_person,
   value    = "ppbr",
   wt_col   = "PERWT",
   group_by = "YEAR"
-)
+) |>
+  rename(ppbr = weighted_mean)
 
 # ============================================================
 # CPS
