@@ -81,19 +81,14 @@ ppbr_2020 <- read_csv(
 map_data <- states_sf |>
   left_join(hhsize_change, by = "STATEFIP")
 
-ggplot(map_data) +
+p_change <- ggplot(map_data) +
   geom_sf(aes(fill = change_hhsize), color = "white", linewidth = 0.2) +
   scale_fill_gradient2(
     low = "#4575b4",
     mid = "white",
     high = "#d73027",
     midpoint = 0,
-    name = "Change in\nHH size\n(1970–2020)"
-  ) +
-  labs(
-    title = "Average Household Size by State, 2020",
-    subtitle = "Weighted mean household size",
-    caption = "Source: IPUMS USA"
+    name = "Change in\npeople per\nhousehold,\n1970-2020"
   ) +
   theme_minimal() +
   theme(
@@ -110,18 +105,14 @@ ggplot(map_data) +
 map_data <- states_sf |>
   left_join(ppbr_2020, by = "STATEFIP")
 
-ggplot(map_data) +
+p_ppbr_2020 <- ggplot(map_data) +
   geom_sf(aes(fill = weighted_mean), color = "black", linewidth = 0.2) +
   scale_fill_gradient2(
     low = "#4575b4",
     mid = "white",
     high = "#d73027",
     midpoint = 1.19,
-    name = "Household size"
-  ) +
-  labs(
-    title = "People Per Bedroom by State, 2020",
-    caption = "Source: IPUMS USA"
+    name = "People per\n bedroom"
   ) +
   theme_minimal() +
   theme(
@@ -130,3 +121,22 @@ ggplot(map_data) +
     panel.grid = element_blank()
   )
 
+# ----------------------------
+# Save both maps
+# ----------------------------
+
+ggsave(
+  filename = "output/five-decade-tables/choropleth-state-ppbr-2020.png",
+  plot = p_ppbr_2020,
+  width = 10,
+  height = 6,
+  dpi = 300
+)
+
+ggsave(
+  filename = "output/five-decade-tables/choropleth-state-change-hhsize-1970-2020.png",
+  plot = p_change,
+  width = 10,
+  height = 6,
+  dpi = 300
+)
