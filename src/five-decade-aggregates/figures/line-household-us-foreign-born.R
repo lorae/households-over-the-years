@@ -43,13 +43,15 @@ p <- ggplot(
     )
   ) +
   labs(
+    x = NULL,
     y = "Household Size",
     color = NULL,
     linetype = NULL
   ) +
-  theme_minimal()
+  theme_minimal() + 
+  theme(legend.position = "bottom")
 
-p <- p + theme(legend.position = "bottom")
+p
 
 
 ggsave(
