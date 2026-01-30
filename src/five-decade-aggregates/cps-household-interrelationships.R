@@ -8,6 +8,7 @@ library("dbplyr")
 library("ggplot2")
 library("readr")
 library("igraph")
+library("purrr")
 
 devtools::load_all("../demographr")
 
@@ -36,7 +37,7 @@ all_households <- ipums_person |>
 cat("Total households:", length(all_households), "\n")
 
 # Define batch size
-batch_size <- 100
+batch_size <- 1000
 
 # Split into batches
 n_batches <- ceiling(length(all_households) / batch_size)
@@ -127,3 +128,4 @@ tbl(con, "ipums_person_with_subfamilies_over18") |>
 # Close connection to ensure data is persisted
 dbDisconnect(con, shutdown = TRUE)
 cat("Database connection closed. Data is safely persisted.\n")
+

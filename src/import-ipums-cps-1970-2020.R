@@ -1,4 +1,4 @@
-# import-ipums-usa.R
+# import-ipums-cps-1970-2020.R
 #
 # This script processes raw IPUMS data and saves it in a DuckDB file.
 #
@@ -51,7 +51,7 @@ ipums_extract <- define_extract_micro(
   ),
   variables = c(
     # Household-level
-    "NUMPREC", "NFAMS", "NCOUPLES", "NMOTHERS", "NFATHERS", "MULTGEN", 
+    "NUMPREC", "NFAMS", "NCOUPLES", "NMOTHERS", "NFATHERS", "MULTGEN", "GQ", 
     "ASECWTH", # equivalent to HHWT in ACS
     #"UNITSSTR", #not needed for now
     # Person-level
