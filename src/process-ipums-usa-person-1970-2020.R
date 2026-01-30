@@ -36,6 +36,7 @@ inflators_db <- copy_to(con, inflators, name = "inflators", temporary = TRUE, ov
 ipums_person <- ipums_db |>
   left_join(inflators_db, by = "YEAR") |>
   mutate(
+    hhid = paste0(SAMPLE, "_", SERIAL),
     # Top-code at 5, since 1940- 1970 has most restrictive top-code
     n_multifam = case_when(
       NFAMS == 0 ~ 0,
@@ -143,6 +144,33 @@ ipums_person <- ipums_db |>
       inctot_2020_harmonized >= 150000 ~ "$150,000 and greater"
     )
   ) 
+
+# Step 2.5: construct household incomes using harmonized personal incomes
+
+hh_income <- ipums_person |>
+  group_by(hhid) |>
+  summarise(
+    hhincome_2020_harmonized = case_when(
+      sum(!is.na(inctot_2020_harmonized)) == 0 ~ NA_real_,
+      TRUE ~ sum(inctot_2020_harmonized, na.rm = TRUE)
+    ),
+    .groups = "drop"
+  )
+
+# join back
+
+ipums_person <- ipums_person |>
+  left_join(hh_income, by = "hhid") |>
+  mutate(
+    hhincome_2020_binned = case_when(
+      is.na(hhincome_2020_harmonized) ~ NA_character_,
+      hhincome_2020_harmonized < 50000 ~ "less than $50,000",
+      hhincome_2020_harmonized >= 50000 & hhincome_2020_harmonized < 100000 ~ "$50,000 - $99,999",
+      hhincome_2020_harmonized >= 100000 & hhincome_2020_harmonized < 150000 ~ "$100,000 - $149,999",
+      hhincome_2020_harmonized >= 150000 ~ "$150,000 and greater"
+    )
+  )
+
 
 # ----- Step 3: Compute, save, close out the connection ----- #
 
