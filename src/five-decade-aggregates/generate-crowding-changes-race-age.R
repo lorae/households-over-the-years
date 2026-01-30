@@ -164,4 +164,66 @@ write_csv(
   file.path(out_dir, "crowded_race_age_change_1970_2020.csv")
 )
 
+# ----------------------------
+# Household size (hhsize) by race × age × decade
+# ----------------------------
+hhsize_race_age_decade <- crosstab_mean(
+  data = base_data,
+  value = "NUMPREC",
+  wt_col = "PERWT",
+  group_by = c("race_eth", "age_bucket", "YEAR")
+)
+
+hhsize_race_age_decade_all <- crosstab_mean(
+  data = base_data,
+  value = "NUMPREC",
+  wt_col = "PERWT",
+  group_by = c("age_bucket", "YEAR")
+) |>
+  mutate(race_eth = "All")
+
+hhsize_race_age_decade_combined <- bind_rows(
+  hhsize_race_age_decade,
+  hhsize_race_age_decade_all
+) |>
+  collect() |>
+  clean_ipums_years("YEAR") |>
+  arrange(YEAR, race_eth, age_bucket)
+
+write_csv(
+  hhsize_race_age_decade_combined,
+  file.path(out_dir, "hhsize_race_age_decade.csv")
+)
+
+# ----------------------------
+# Change in household size (hhsize)
+# ----------------------------
+hhsize_race_age_change <- hhsize_race_age_decade_combined |>
+  filter(YEAR %in% c(1970, 2020)) |>
+  select(
+    race_eth,
+    age_bucket,
+    YEAR,
+    count,
+    weighted_count,
+    hhsize = weighted_mean
+  ) |>
+  pivot_wider(
+    names_from = YEAR,
+    values_from = c(count, weighted_count, hhsize),
+    names_sep = "_"
+  ) |>
+  mutate(
+    change_hhsize = hhsize_2020 - hhsize_1970,
+    pct_change_hhsize = 100 * change_hhsize / hhsize_1970
+  ) |>
+  arrange(race_eth, age_bucket) |>
+  filter(race_eth != "Multiracial")
+
+write_csv(
+  hhsize_race_age_change,
+  file.path(out_dir, "hhsize_race_age_change_1970_2020.csv")
+)
+
+
 dbDisconnect(con)

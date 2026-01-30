@@ -17,6 +17,11 @@ ppbr_change <- read_csv(
   show_col_types = FALSE
 )
 
+hhsize_change <- read_csv(
+  file.path(data_dir, "hhsize_race_age_change_1970_2020.csv"),
+  show_col_types = FALSE
+)
+
 # ----------------------------
 # Ordered factors
 # ----------------------------
