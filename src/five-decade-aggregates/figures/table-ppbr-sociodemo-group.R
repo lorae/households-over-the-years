@@ -19,7 +19,7 @@ ppbr_race <- read_csv(
 )
 
 ppbr_income <- read_csv(
-  "output/five-decade-tables/raw/ppbr_income_adults.csv",
+  "output/five-decade-tables/raw/ppbr_income_everyone.csv",
   show_col_types = FALSE
 )
 

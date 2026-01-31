@@ -9,7 +9,7 @@ crowding_overall <- read_csv("output/five-decade-tables/raw/crowded_overall.csv"
 
 crowding_race <- read_csv("output/five-decade-tables/raw/crowded_race.csv")
 
-crowding_income <- read_csv("output/five-decade-tables/raw/crowded_income_adults.csv")
+crowding_income <- read_csv("output/five-decade-tables/raw/crowded_income_everyone.csv")
 
 crowding_tenure <- read_csv("output/five-decade-tables/raw/crowded_tenure.csv")
 
@@ -68,7 +68,7 @@ overall_section <- bind_rows(overall_section, overall_spacer)
 # Other sections
 # ----------------------------
 race_section <- make_section(crowding_race, "Race / Ethnicity", "race_eth")
-income_section <- make_section(crowding_income, "Income", "inctot_binned")
+income_section <- make_section(crowding_income, "Income", "hhincome_2020_binned")
 tenure_section <- make_section(crowding_tenure, "Tenure", "tenure")
 birthplace_section <- make_section(crowding_birthplace, "Place of Birth", "birthplace")
 

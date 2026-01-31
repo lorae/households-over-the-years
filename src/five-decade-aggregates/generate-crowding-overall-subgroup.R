@@ -272,31 +272,31 @@ crowded_income_decade_everyone <- crosstab_percent(
   percent_group_by = c("YEAR", "hhincome_2020_binned")
 )
 
-crowded_income_adults <- clean_crowding_output(
-  crowded_income_decade_usa,
-  group_var = "inctot_binned",
+crowded_income_everyone <- clean_crowding_output(
+  crowded_income_decade_everyone,
+  group_var = "hhincome_2020_binned",
   group_levels = income_levels
 )
 
 write_csv(
-  crowded_income_adults,
-  "output/five-decade-tables/raw/crowded_income_adults.csv"
+  crowded_income_everyone,
+  "output/five-decade-tables/raw/crowded_income_everyone.csv"
 )
 
-ppbr_income_decade_usa <- crosstab_mean(
-  data = base_data_adults,
+ppbr_income_decade_everyone <- crosstab_mean(
+  data = ipums_person |> filter(GQ %in% c(0, 1, 2)),
   value = "ppbr",
   wt_col = "PERWT",
   group_by = c("inctot_binned", "YEAR")
 )
 
-ppbr_income_adults <- clean_ppbr_output(
-  ppbr_income_decade_usa,
+ppbr_income_everyone <- clean_ppbr_output(
+  ppbr_income_decade_everyone,
   group_var = "inctot_binned",
   group_levels = income_levels
 )
 
 write_csv(
-  ppbr_income_adults,
-  "output/five-decade-tables/raw/ppbr_income_adults.csv"
+  ppbr_income_everyone,
+  "output/five-decade-tables/raw/ppbr_income_everyone.csv"
 )
