@@ -287,14 +287,15 @@ ppbr_income_decade_everyone <- crosstab_mean(
   data = ipums_person |> filter(GQ %in% c(0, 1, 2)),
   value = "ppbr",
   wt_col = "PERWT",
-  group_by = c("inctot_binned", "YEAR")
+  group_by = c("hhincome_2020_binned", "YEAR")
 )
 
-ppbr_income_everyone <- clean_ppbr_output(
-  ppbr_income_decade_everyone,
-  group_var = "inctot_binned",
-  group_levels = income_levels
-)
+ppbr_income_everyone <- ppbr_income_decade_everyone |>
+  filter(!is.na(hhincome_2020_binned)) |>  # Remove 12 obs with NA income
+  clean_ppbr_output(
+    group_var = "hhincome_2020_binned",
+    group_levels = income_levels
+  )
 
 write_csv(
   ppbr_income_everyone,

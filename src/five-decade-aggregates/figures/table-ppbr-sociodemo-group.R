@@ -86,7 +86,7 @@ overall_section <- bind_rows(overall_section, overall_spacer)
 # Other sections
 # ----------------------------
 race_section <- make_section(ppbr_race, "Race / Ethnicity", "race_eth")
-income_section <- make_section(ppbr_income, "Income", "inctot_binned")
+income_section <- make_section(ppbr_income, "Income", "hhincome_2020_binned")
 tenure_section <- make_section(ppbr_tenure, "Tenure", "tenure")
 birthplace_section <- make_section(ppbr_birthplace, "Place of Birth", "birthplace")
 

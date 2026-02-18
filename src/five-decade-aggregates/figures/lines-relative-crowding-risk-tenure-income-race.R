@@ -5,11 +5,12 @@ library(readr)
 library(ggplot2)
 library(patchwork)
 
+out_dir <- "output/five-decade-tables"
 # ----------------------------
 # Read data
 # ----------------------------
 crowded_income <- read_csv(
-  "output/five-decade-tables/raw/crowded_rel_risk_income_adult.csv",
+  "output/five-decade-tables/raw/crowded_rel_risk_income.csv",
   show_col_types = FALSE
 )
 
@@ -71,8 +72,8 @@ tenure_colors <- c(
 # Plots
 # ----------------------------
 p_income <- crowded_income |>
-  mutate(inctot_binned = factor(inctot_binned, levels = income_levels)) |>
-  ggplot(aes(x = YEAR, y = rel_risk, color = inctot_binned, group = inctot_binned)) +
+  mutate(hhincome_2020_binned = factor(hhincome_2020_binned, levels = income_levels)) |>
+  ggplot(aes(x = YEAR, y = rel_risk, color = hhincome_2020_binned, group = hhincome_2020_binned)) +
   geom_line(linewidth = 1) +
   geom_point(size = 2) +
   scale_color_manual(values = income_colors) +
