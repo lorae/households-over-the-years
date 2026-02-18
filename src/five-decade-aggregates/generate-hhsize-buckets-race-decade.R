@@ -92,7 +92,14 @@ hhsize_decade_race <- bind_rows(
     percent = sum(percent),
     count = sum(count),
     .groups = "drop"
-  )
+  ) |>
+  # Relabel ACS years using midpoint
+  clean_years() |>
+  mutate(
+    race_eth = factor(race_eth,
+                      levels = c(race_levels, "All"))
+  ) |>
+  arrange(YEAR, race_eth, NUMPREC)
 
 write_csv(
   hhsize_decade_race,
