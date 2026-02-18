@@ -19,48 +19,32 @@ hhsize_race_year <- read_csv(
 # Step 2: Filter to 1970 & 2020
 # -----------------------------
 
-hhsize_race_year <- hhsize_race_year |>
-  filter(year %in% c(1970, 2020))
-
-# -----------------------------
-# Step 3: Topcode household size
-# -----------------------------
-
-topcode_hhsize <- 8
-
 fig_data <- hhsize_race_year |>
-  mutate(NUMPREC = if_else(NUMPREC >= topcode_hhsize, 
-                           topcode_hhsize, 
-                           NUMPREC)) |>
-  group_by(RACE_ETH_bucket, NUMPREC, year) |>
-  summarise(
-    weighted_count = sum(weighted_count),
-    count = sum(count),
-    .groups = "drop"
-  ) |>
-  group_by(RACE_ETH_bucket, year) |>
-  mutate(freq = weighted_count / sum(weighted_count)) |>
-  ungroup() |>
-  arrange(year, RACE_ETH_bucket, NUMPREC)
+  filter(YEAR %in% c(1970, 2020)) |>
+  arrange(YEAR, race_eth, NUMPREC)
 
 # -----------------------------
 # Step 4: Plot Function
 # -----------------------------
 
-plot_double_hist <- function(data, title = NULL, ymax = 0.35, add_legend = FALSE) {
+plot_double_hist <- function(data, 
+                             title = NULL,
+                             ymax = 60, 
+                             show_x = FALSE,
+                             add_legend = FALSE) {
   
   d1 <- data |> 
-    filter(year == 1970) |>
-    mutate(year_label = "1970")
+    filter(YEAR == 1970) |>
+    mutate(YEAR_label = "1970")
   
   d2 <- data |> 
-    filter(year == 2020) |>
-    mutate(year_label = "2020")
+    filter(YEAR == 2020) |>
+    mutate(YEAR_label = "2020")
   
-  ggplot(mapping = aes(x = factor(NUMPREC), y = freq)) +
+  ggplot(mapping = aes(x = factor(NUMPREC), y = percent)) +
     geom_bar(
       data = d1,
-      aes(fill = year_label, color = year_label),
+      aes(fill = YEAR_label, color = YEAR_label),
       stat = "identity",
       alpha = 0.4,
       width = 0.9,
@@ -68,7 +52,7 @@ plot_double_hist <- function(data, title = NULL, ymax = 0.35, add_legend = FALSE
     ) +
     geom_bar(
       data = d2,
-      aes(fill = year_label, color = year_label),
+      aes(fill = YEAR_label, color = YEAR_label),
       stat = "identity",
       alpha = 0.7,
       width = 0.6,
@@ -85,10 +69,13 @@ plot_double_hist <- function(data, title = NULL, ymax = 0.35, add_legend = FALSE
                  "2020" = "forestgreen"),
       guide = if (add_legend) "legend" else "none"
     ) +
+    scale_y_continuous(
+      labels = function(x) paste0(x, "%")
+    ) +
     labs(
       title = title,
-      x = "Number of Persons in Household",
-      y = "Frequency",
+      x = if (show_x) "Number of Persons in Household" else NULL,
+      y = NULL,
       fill = NULL,
       color = NULL
     ) +
@@ -101,17 +88,47 @@ plot_double_hist <- function(data, title = NULL, ymax = 0.35, add_legend = FALSE
     )
 }
 
+
+
 # -----------------------------
 # Step 5: Create Plots
 # -----------------------------
 
-ymax <- 0.35
+ymax <- 35
 
 white <- plot_double_hist(
-  fig_data |> filter(RACE_ETH_bucket == "White"),
-  title = "White"
+  fig_data |> filter(race_eth == "White"),
+  title = "White",
+  ymax = ymax,
+  show_x = FALSE
 )
 
 hispanic <- plot_double_hist(
-  fig_data |> filter(RACE_ETH_bucket == "Hispanic"),
-  title = "Hisp
+  fig_data |> filter(race_eth == "Hispanic"),
+  title = "Hispanic",
+  ymax = ymax,
+  show_x = FALSE
+)
+
+black <- plot_double_hist(
+  fig_data |> filter(race_eth == "Black"),
+  title = "Black",
+  ymax = ymax,
+  show_x = TRUE,
+  add_legend = TRUE
+)
+
+fig <- white / hispanic / black
+
+
+
+fig
+
+ggsave(
+  "output/five-decade-tables/stacked-hist-hhsize-bucket-race-1970-2020.png",
+  plot = fig,
+  width = 4,
+  height = 6,
+  units = "in",
+  dpi = 300
+)

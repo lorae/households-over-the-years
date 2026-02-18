@@ -60,7 +60,7 @@ base_data <- ipums_person |> filter(GQ %in% c(0, 1, 2))
 
 
 # ----- Step 2: Compute table ----- #
-hhsize_topcode <- 5
+hhsize_topcode <- 8
 
 hhsize_decade_race_groups <- crosstab_percent(
   data = base_data,
