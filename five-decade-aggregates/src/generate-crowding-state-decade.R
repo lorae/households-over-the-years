@@ -7,6 +7,7 @@ library(tidyr)
 library(writexl)
 
 devtools::load_all("../demographr")
+source("five-decade-aggregates/src/helpers/setup.R")
 
 # ================================
 # Helpers: STATEFIP -> state name
@@ -103,17 +104,6 @@ add_state_names <- function(df, statefip_col = "STATEFIP",
     left_join(lookup, by = "STATEFIP")
 }
 
-clean_ipums_years <- function(df, year_col = "YEAR") {
-  df |>
-    mutate(
-      !!year_col := recode(
-        as.integer(.data[[year_col]]),
-        `2012` = 2010L,
-        `2022` = 2020L
-      )
-    )
-}
-
 # ----- Step 1: Connect to DB ----- #
 con <- dbConnect(duckdb::duckdb(), "data/five-decade-db/ipums.duckdb")
 
@@ -136,7 +126,7 @@ hhsize_state_decade <- crosstab_mean(
   group_by = c("STATEFIP", "YEAR")
 ) |>
   collect() |>
-  clean_ipums_years("YEAR") |>
+  clean_years() |>
   add_state_names(include_groups = TRUE) |>
   arrange(YEAR, state_name)
 
@@ -153,7 +143,7 @@ bedroom_state_decade <- crosstab_mean(
   group_by = c("STATEFIP", "YEAR")
 ) |>
   collect() |>
-  clean_ipums_years("YEAR") |>
+  clean_years() |>
   add_state_names(include_groups = TRUE) |>
   arrange(YEAR, state_name)
 
@@ -170,7 +160,7 @@ ppbr_state_decade <- crosstab_mean(
   group_by = c("STATEFIP", "YEAR")
 ) |>
   collect() |>
-  clean_ipums_years("YEAR") |>
+  clean_years() |>
   add_state_names(include_groups = TRUE) |>
   arrange(YEAR, state_name)
 
@@ -190,7 +180,7 @@ crowded_state_decade <- crosstab_percent(
   collect() |>
   filter(crowded) |>
   select(-crowded) |>
-  clean_ipums_years("YEAR") |>
+  clean_years() |>
   add_state_names(include_groups = TRUE) |>
   arrange(YEAR, state_name) |>
   rename(crowded = percent)

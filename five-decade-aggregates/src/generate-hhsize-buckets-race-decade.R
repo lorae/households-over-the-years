@@ -10,44 +10,7 @@ library("tidyr")
 library("writexl")
 
 devtools::load_all("../demographr")
-
-# ================================
-# Helpers
-# ================================
-
-clean_years <- function(df) {
-  df |>
-    mutate(
-      YEAR = dplyr::recode(YEAR, `2012` = 2010L, `2022` = 2020L)
-    )
-}
-
-
-clean_hhsize_output <- function(df, group_var = NULL, group_levels = NULL) {
-  out <- df |>
-    clean_years() |>
-    rename(hhsize = weighted_mean)
-  
-  if (!is.null(group_var)) {
-    out <- out |>
-      mutate(
-        !!group_var := factor(.data[[group_var]], levels = group_levels)
-      ) |>
-      arrange(YEAR, !!sym(group_var))
-  } else {
-    out <- out |> arrange(YEAR)
-  }
-  
-  out
-}
-
-years <- c(1970, 1980, 1990, 2000, 2010, 2020)
-
-race_levels <- c(
-  "AIAN", "AAPI", "Black", "Hispanic",
-  "White", "Multiracial", "Other"
-)
-
+source("five-decade-aggregates/src/helpers/setup.R")
 
 # ----- Step 1: Connect to DB ----- #
 con <- dbConnect(duckdb::duckdb(), "data/five-decade-db/ipums.duckdb")

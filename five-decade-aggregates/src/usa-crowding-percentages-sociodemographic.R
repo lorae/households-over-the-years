@@ -12,6 +12,7 @@ library("tidyr")
 library("writexl")
 
 devtools::load_all("../demographr")
+source("five-decade-aggregates/src/helpers/setup.R")
 
 # ----- Step 1: Connect to DB ----- #
 con <- dbConnect(duckdb::duckdb(), "data/five-decade-db/ipums.duckdb")
@@ -68,18 +69,6 @@ crowded_income_decade_usa <- crosstab_percent(
 )
 
 # ================================
-# Helpers
-# ================================
-
-clean_years <- function(df) {
-  df |>
-    mutate(YEAR = ifelse(YEAR == 2012, 2010, YEAR)) |>
-    mutate(YEAR = ifelse(YEAR == 2022, 2020, YEAR))
-}
-
-years <- c(1970, 1980, 1990, 2000, 2010, 2020)
-
-# ================================
 # 1. Overall crowding
 # ================================
 
@@ -104,11 +93,6 @@ overall_table <- bind_rows(overall_percent, overall_count)
 # ================================
 # 2. Race / ethnicity (crowded only)
 # ================================
-
-race_levels <- c(
-  "AIAN", "AAPI", "Black", "Hispanic",
-  "White", "Multiracial", "Other"
-)
 
 race_table <- clean_years(crowded_race_decade_usa) |>
   filter(crowded, race_eth %in% race_levels) |>
@@ -136,13 +120,6 @@ birthplace_table <- clean_years(crowded_birthplace_decade_usa) |>
 # ================================
 # 5. Income (crowded only, adults)
 # ================================
-
-income_levels <- c(
-  "less than $50,000",
-  "$50,000 - $99,999",
-  "$100,000 - $149,999",
-  "$150,000 and greater"
-)
 
 income_table <- clean_years(crowded_income_decade_usa) |>
   filter(crowded, inctot_binned %in% income_levels) |>

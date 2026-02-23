@@ -7,21 +7,7 @@ library(tidyr)
 library(writexl)
 
 devtools::load_all("../demographr")
-
-# ================================
-# Helpers: STATEFIP -> state name
-# ================================
-
-clean_ipums_years <- function(df, year_col = "YEAR") {
-  df |>
-    mutate(
-      !!year_col := recode(
-        as.integer(.data[[year_col]]),
-        `2012` = 2010L,
-        `2022` = 2020L
-      )
-    )
-}
+source("five-decade-aggregates/src/helpers/setup.R")
 
 # ----- Step 1: Connect to DB ----- #
 con <- dbConnect(duckdb::duckdb(), "data/five-decade-db/ipums.duckdb")
@@ -60,7 +46,7 @@ ppbr_race_age_decade_combined <- bind_rows(
   ppbr_race_age_decade_all
 ) |>
   collect() |>
-  clean_ipums_years("YEAR") |>
+  clean_years() |>
   arrange(YEAR, race_eth, age_bucket)
 
 write_csv(ppbr_race_age_decade_combined,
@@ -91,7 +77,7 @@ crowded_race_age_decade_combined <- bind_rows(
   collect() |>
   filter(crowded) |>
   select(-crowded) |>
-  clean_ipums_years("YEAR") |>
+  clean_years() |>
   arrange(YEAR, race_eth, age_bucket)
 
 write_csv(
@@ -187,7 +173,7 @@ hhsize_race_age_decade_combined <- bind_rows(
   hhsize_race_age_decade_all
 ) |>
   collect() |>
-  clean_ipums_years("YEAR") |>
+  clean_years() |>
   arrange(YEAR, race_eth, age_bucket)
 
 write_csv(
