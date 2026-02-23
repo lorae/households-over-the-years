@@ -9,7 +9,7 @@ The average American at the turn of the 20th century lived in a household with n
 6 individuals. With some exceptions, that value has since been on the decline, with the
 rate of decrease in household size much slower in recent decades than during most of 
 the 20th century. As of 2023, the average American lives in a household of 3.33 persons.
-![](output/figures/fig01-hhsize-decades-line.jpeg)
+![](k-means-clustering/output/figures/fig01-hhsize-decades-line.jpeg)
 
 ## ⚡ Quick Start
 For experienced users who just want to get the project running right away. If you
@@ -46,7 +46,8 @@ have trouble following these steps, please follow the **Detailed Start** guide b
     
     ```r
     renv::restore()
-    source("run-all.R")
+    source("k-means-clustering/run-all.R")   # 1900-2023 clustering
+    source("five-decade-aggregates/run-all.R") # 1970-2020 crowding
     ```
     
 
@@ -159,16 +160,19 @@ from the codebase.
 
 ### Part C: Run the analysis scripts
 
-The code for this project is stored in the `src` folder:
+The code for this project is organized into two sub-projects:
 
-- `scripts/`: executable analysis scripts
+- `k-means-clustering/` — K-means clustering analysis (1900-2023)
+- `five-decade-aggregates/` — Household crowding and subfamily detection (1970-2020)
 
-- `utils/`: accessory modules (functions), subject to unit tests
-
-8. Run all code by sourcing the `run-all.R` script in your R console:
+8. Run the analysis by sourcing the appropriate `run-all.R` in your R console:
 
     ```r
-    source("run-all.R")
+    # K-means clustering analysis (1900-2023)
+    source("k-means-clustering/run-all.R")
+
+    # Five-decade crowding analysis (1970-2020)
+    source("five-decade-aggregates/run-all.R")
     ```
     
 

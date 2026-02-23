@@ -5,9 +5,9 @@ data/db/**
 !data/db/.gitkeep
 data/five-decade-db/**
 
-# ignore contents of throughput, but preserve file structure
-throughput/**
-!throughput/.gitkeep
+# K-means intermediate results
+k-means-clustering/throughput/**
+!k-means-clustering/throughput/.gitkeep
 
 # History files
 .Rhistory
