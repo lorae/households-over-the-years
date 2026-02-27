@@ -1,6 +1,16 @@
-# The purpose of this script is to quantify the frequency of household interrelationships
-# across all decades in the sample.
-
+# cps-household-interrelationships.R
+#
+# Builds subfamily structure for CPS households using graph-based adjacency
+# analysis. Processes households in batches (~4 hours), computing subfamily
+# count/membership, subfamily size, child counts, and spouse indicators.
+#
+# Inputs:
+# - data/five-decade-db/ipums_cps.duckdb (table: ipums_person)
+# - ../demographr (sibling package)
+#
+# Outputs:
+# - data/five-decade-db/ipums_cps.duckdb (table: ipums_person_with_subfamilies_over18)
+#
 # ----- Step 0: CPS ----- #
 library("dplyr")
 library("duckdb")

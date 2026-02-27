@@ -66,4 +66,12 @@ flowchart TD
     cps_db --> process_cps
     demographr --> process_cps
     process_cps --> cps_person_db
+
+    %% --- Process: CPS household interrelationships ---
+    cps_interrel["src/<br>cps-household-interrelationships.R"]:::script
+    cps_subfam_db[("data/five-decade-db/ipums_cps.duckdb<br>(table: ipums_person_with_subfamilies_over18)")]:::data
+
+    cps_person_db --> cps_interrel
+    demographr --> cps_interrel
+    cps_interrel --> cps_subfam_db
 ```
