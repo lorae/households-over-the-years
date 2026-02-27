@@ -13,28 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "To-dos.md",
+                "file": "Data flow.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "To-dos"
-            }
-          }
-        ]
-      },
-      {
-        "id": "268f5c21e88de160",
-        "type": "tabs",
-        "children": [
-          {
-            "id": "01f0fbaada98e029",
-            "type": "leaf",
-            "state": {
-              "type": "graph",
-              "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Graph view"
+              "title": "Data flow"
             }
           }
         ]
@@ -110,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "To-dos.md",
+                "file": "Data flow.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -120,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for To-dos"
+              "title": "Backlinks for Data flow"
             }
           },
           {
@@ -129,12 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "To-dos.md",
+                "file": "Data flow.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from To-dos"
+              "title": "Outgoing links from Data flow"
             }
           },
           {
@@ -172,13 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "To-dos.md",
+                "file": "Data flow.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of To-dos"
+              "title": "Outline of Data flow"
             }
           }
         ]
@@ -201,7 +185,11 @@
   },
   "active": "4059a2728207cf65",
   "lastOpenFiles": [
-    "Welcome.md",
-    "To-dos.md"
+    "Data flow.md.tmp.70956.1772220097864",
+    "Data flow.md.tmp.70956.1772219763623",
+    "Data flow.md.tmp.70956.1772219439147",
+    "To-dos.md",
+    "Data flow.md",
+    "Welcome.md"
   ]
 }

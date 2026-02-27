@@ -1,11 +1,16 @@
 # import-ipums-cps-1970-2020.R
 #
-# This script processes raw IPUMS data and saves it in a DuckDB file.
+# Downloads IPUMS CPS ASEC microdata (1970-2020) via the IPUMS API and loads it
+# into a DuckDB database. Pulls six decennial ASEC samples with household and
+# person variables for subfamily/interrelationship analysis.
 #
-# Input:
-# -  makes API call to IPUMS CPS. Be sure to follow Part B of project set-up
-#    in README.md before running - this script reads an environment variable from 
-#    .Renviron
+# Inputs:
+# - .Renviron (IPUMS_API_KEY)
+# - IPUMS CPS API (remote)
+#
+# Outputs:
+# - data/raw-microdata/cps_NNNNN.xml + .dat.gz (intermediate)
+# - data/five-decade-db/ipums_cps.duckdb (table: ipums)
 #
 
 # ----- Step 0: Configuration ----- #

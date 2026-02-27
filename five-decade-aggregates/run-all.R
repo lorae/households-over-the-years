@@ -5,16 +5,16 @@
 renv::restore()
 
 # Import data
-source("five-decade-aggregates/src/import-ipums-usa-1970-2020.R")
-source("five-decade-aggregates/src/import-ipums-cps-1970-2020.R")
+source("five-decade-aggregates/src/import/import-ipums-usa-1970-2020.R")
+source("five-decade-aggregates/src/import/import-ipums-cps-1970-2020.R")
 
 # Process data
 source("five-decade-aggregates/src/process-ipums-usa-person-1970-2020.R")
 source("five-decade-aggregates/src/process-ipums-cps-person-1970-2020.R")
 
-# CPS household interrelationships (must run before cps-interrrelationships)
+# CPS household interrelationships (must run before cps-interrelationships)
 source("five-decade-aggregates/src/cps-household-interrelationships.R")
-source("five-decade-aggregates/src/cps-interrrelationships.R")
+# source("five-decade-aggregates/src/cps-interrelationships.R")
 
 # Generate tables (order matters: some scripts read CSVs from earlier ones)
 source("five-decade-aggregates/src/generate-household-bedroom-crowding-overall.R")
