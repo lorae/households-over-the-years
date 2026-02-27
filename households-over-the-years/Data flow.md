@@ -46,4 +46,15 @@ flowchart TD
     import_cps --> raw_cps
     import_cps --> cps_db
     raw_cps --> cps_db
+
+    %% --- Process: IPUMS USA person-level ---
+    inflators(["reference/<br>inflators-1970-2020.csv"]):::input
+    demographr(["../demographr"]):::input
+    process_usa["src/<br>process-ipums-usa-person-1970-2020.R"]:::script
+    ipums_person_db[("data/five-decade-db/ipums.duckdb<br>(table: ipums_person)")]:::data
+
+    ipums_db --> process_usa
+    inflators --> process_usa
+    demographr --> process_usa
+    process_usa --> ipums_person_db
 ```

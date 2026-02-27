@@ -1,14 +1,24 @@
-# process-person-level-ipums.R
+# process-ipums-usa-person-1970-2020.R
 #
-# This script adds bucket columns to raw (person-level) data.
-# It reads data from the "ipums" table in `/five-decade-db/ipums.duckdb` and writes processed
-# data to the "ipums-bucketed" table in `/five-decade-db/ipums-processed.duckdb`.
+# Adds derived columns to the raw IPUMS USA person-level data: age buckets,
+# race/ethnicity, tenure, birthplace, inflation-adjusted income, persons per
+# bedroom, and binned income categories. Writes the result as a new table in
+# the same database.
+#
+# Inputs:
+# - data/five-decade-db/ipums.duckdb (table: ipums)
+# - five-decade-aggregates/reference/inflators-1970-2020.csv
+# - ../demographr (sibling package)
+#
+# Outputs:
+# - data/five-decade-db/ipums.duckdb (table: ipums_person)
 #
 # ----- Step 0: Configuration ----- #
 library("dplyr")
 library("duckdb")
 library("ipumsr")
 library("dbplyr")
+library("readr")
 
 devtools::load_all("../demographr")
 
