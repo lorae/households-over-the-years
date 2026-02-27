@@ -14,6 +14,7 @@ Data flow diagram for `five-decade-aggregates/` pipeline. See `run-all.R` for ex
 ## Diagram
 
 ```mermaid
+%%{init: {"flowchart": {"defaultRenderer": "elk"}, "themeVariables": {"fontSize": "14px"}} }%%
 flowchart TD
     classDef script fill:#4a90d9,color:#fff,stroke:#2c5f8a
     classDef data fill:#5cb85c,color:#fff,stroke:#3d8b3d
@@ -57,4 +58,12 @@ flowchart TD
     inflators --> process_usa
     demographr --> process_usa
     process_usa --> ipums_person_db
+
+    %% --- Process: IPUMS CPS person-level ---
+    process_cps["src/<br>process-ipums-cps-person-1970-2020.R"]:::script
+    cps_person_db[("data/five-decade-db/ipums_cps.duckdb<br>(table: ipums_person)")]:::data
+
+    cps_db --> process_cps
+    demographr --> process_cps
+    process_cps --> cps_person_db
 ```

@@ -1,6 +1,14 @@
-# process-person-level-ipums.R
+# process-ipums-cps-person-1970-2020.R
 #
-# This script adds bucket columns to raw (person-level) data.
+# Adds derived columns to the raw IPUMS CPS person-level data (age buckets).
+# Writes the result as a new table in the same database.
+#
+# Inputs:
+# - data/five-decade-db/ipums_cps.duckdb (table: ipums)
+# - ../demographr (sibling package)
+#
+# Outputs:
+# - data/five-decade-db/ipums_cps.duckdb (table: ipums_person)
 # ----- Step 0: Configuration ----- #
 library("dplyr")
 library("duckdb")
