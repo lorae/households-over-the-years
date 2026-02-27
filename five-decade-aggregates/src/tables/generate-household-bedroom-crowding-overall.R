@@ -1,6 +1,19 @@
 # generate-household-bedroom-crowding-overall.R
-# Aggregate household size, bedrooms, and crowding by decade (ACS + CPS)
-
+#
+# Computes weighted mean household size, bedrooms, and persons per bedroom by
+# decade using ACS data, plus weighted mean household size from CPS ASEC.
+#
+# Inputs:
+# - data/five-decade-db/ipums.duckdb (table: ipums_person)
+# - data/five-decade-db/ipums_cps.duckdb (table: ipums_person)
+# - ../demographr (sibling package)
+#
+# Outputs:
+# - five-decade-aggregates/output/raw/hhsize_decade_overall.csv
+# - five-decade-aggregates/output/raw/bedroom_decade_overall.csv
+# - five-decade-aggregates/output/raw/ppbr_decade_overall.csv
+# - five-decade-aggregates/output/raw/cps_hhsize_decade_overall.csv
+#
 # ----------------------------
 # Paths
 # ----------------------------

@@ -74,4 +74,19 @@ flowchart TD
     cps_person_db --> cps_interrel
     demographr --> cps_interrel
     cps_interrel --> cps_subfam_db
+
+    %% --- Tables: household/bedroom/crowding overall ---
+    gen_hh_crowding["src/tables/<br>generate-household-bedroom-crowding-overall.R"]:::script
+    hhsize_overall[("output/raw/<br>hhsize_decade_overall.csv")]:::data
+    bedroom_overall[("output/raw/<br>bedroom_decade_overall.csv")]:::data
+    ppbr_overall[("output/raw/<br>ppbr_decade_overall.csv")]:::data
+    cps_hhsize_overall[("output/raw/<br>cps_hhsize_decade_overall.csv")]:::data
+
+    ipums_person_db --> gen_hh_crowding
+    cps_person_db --> gen_hh_crowding
+    demographr --> gen_hh_crowding
+    gen_hh_crowding --> hhsize_overall
+    gen_hh_crowding --> bedroom_overall
+    gen_hh_crowding --> ppbr_overall
+    gen_hh_crowding --> cps_hhsize_overall
 ```
