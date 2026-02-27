@@ -26,12 +26,12 @@ flowchart TD
     cps_api(["IPUMS CPS API"]):::input
 
     %% --- Import: IPUMS USA ---
-    import_usa["src/import/<br>import-ipums-usa-1970-2020.R"]:::script
+    import_usa["src/<br>import-ipums-usa-1970-2020.R"]:::script
     raw_usa[("data/raw-microdata/<br>usa_NNNNN.xml + .dat.gz")]:::intermediate
     ipums_db[("data/five-decade-db/ipums.duckdb<br>(table: ipums)")]:::data
 
     %% --- Import: IPUMS CPS ---
-    import_cps["src/import/<br>import-ipums-cps-1970-2020.R"]:::script
+    import_cps["src/<br>import-ipums-cps-1970-2020.R"]:::script
     raw_cps[("data/raw-microdata/<br>cps_NNNNN.xml + .dat.gz")]:::intermediate
     cps_db[("data/five-decade-db/ipums_cps.duckdb<br>(table: ipums)")]:::data
 

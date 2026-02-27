@@ -5,8 +5,8 @@
 renv::restore()
 
 # Import data
-source("five-decade-aggregates/src/import/import-ipums-usa-1970-2020.R")
-source("five-decade-aggregates/src/import/import-ipums-cps-1970-2020.R")
+source("five-decade-aggregates/src/import-ipums-usa-1970-2020.R")
+source("five-decade-aggregates/src/import-ipums-cps-1970-2020.R")
 
 # Process data
 source("five-decade-aggregates/src/process-ipums-usa-person-1970-2020.R")
