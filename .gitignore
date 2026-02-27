@@ -29,6 +29,9 @@ k-means-clustering/throughput/**
 # Output files from R CMD check
 /*.Rcheck/
 
+# Obsidian workspace (user-specific UI state)
+households-over-the-years/.obsidian/workspace.json
+
 # RStudio files
 .Rproj.user/
 
