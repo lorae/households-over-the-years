@@ -169,4 +169,11 @@ flowchart TD
     hhsize_overall --> gen_hhsize_contrib
     bedroom_overall --> gen_hhsize_contrib
     gen_hhsize_contrib --> contrib_csv
+
+    %% --- Tables: household size contributions by member type ---
+    gen_hhsize_members["src/tables/<br>generate-hhsize-contributions-members.R"]:::script
+    hhsize_members_csv[("output/raw/<br>hhsize_contributions_members.csv")]:::data
+
+    combined_cps_adults --> gen_hhsize_members
+    gen_hhsize_members --> hhsize_members_csv
 ```

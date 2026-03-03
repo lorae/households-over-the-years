@@ -1,4 +1,16 @@
 # generate-hhsize-contributions-members.R
+#
+# Decomposes intra-decade changes in household size into contributions from
+# children, spouses, and other subfamily members. CPS data (adults only).
+#
+# Inputs:
+# - five-decade-aggregates/output/raw/combined_cps_adults.csv
+#
+# Outputs:
+# - five-decade-aggregates/output/raw/hhsize_contributions_members.csv
+#
+library(dplyr)
+library(readr)
 
 households <- read_csv("five-decade-aggregates/output/raw/combined_cps_adults.csv")
 
