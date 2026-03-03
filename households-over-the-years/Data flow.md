@@ -142,4 +142,13 @@ flowchart TD
     demographr --> gen_hhsize_subgroup
     setup --> gen_hhsize_subgroup
     gen_hhsize_subgroup --> hhsize_subgroup_csvs
+
+    %% --- Tables: household size buckets by race and decade ---
+    gen_hhsize_buckets["src/tables/<br>generate-hhsize-buckets-race-decade.R"]:::script
+    hhsize_buckets_csv[("output/raw/<br>hhsize-buckets-race-decade.csv")]:::data
+
+    ipums_person_db --> gen_hhsize_buckets
+    demographr --> gen_hhsize_buckets
+    setup --> gen_hhsize_buckets
+    gen_hhsize_buckets --> hhsize_buckets_csv
 ```

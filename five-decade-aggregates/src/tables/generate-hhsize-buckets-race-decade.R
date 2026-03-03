@@ -1,5 +1,16 @@
-# hhsize-buckets-race-decade.csv
-
+# generate-hhsize-buckets-race-decade.R
+#
+# Computes household size distribution (% in each size bucket, top-coded at 8+)
+# by race/ethnicity and decade. ACS data only.
+#
+# Inputs:
+# - data/five-decade-db/ipums.duckdb (table: ipums_person)
+# - ../demographr (sibling package)
+# - five-decade-aggregates/src/helpers/setup.R
+#
+# Outputs:
+# - five-decade-aggregates/output/raw/hhsize-buckets-race-decade.csv
+#
 # ----- Step 0: Config ----- #
 library("dplyr")
 library("duckdb")

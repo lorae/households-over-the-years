@@ -24,7 +24,7 @@ source("five-decade-aggregates/src/tables/generate-crowding-changes-state-1970-2
 source("five-decade-aggregates/src/tables/generate-crowding-age-decade.R")
 source("five-decade-aggregates/src/tables/generate-crowding-changes-race-age.R")
 source("five-decade-aggregates/src/tables/generate-hhsize-subgroup.R")
-source("five-decade-aggregates/src/generate-hhsize-buckets-race-decade.R")
+source("five-decade-aggregates/src/tables/generate-hhsize-buckets-race-decade.R")
 source("five-decade-aggregates/src/generate-hhsize-bedroom-contrib-decade.R")
 source("five-decade-aggregates/src/generate-hhsize-contributions-members.R")
 source("five-decade-aggregates/src/generate-doubled-up-overall-subgroup.R")
