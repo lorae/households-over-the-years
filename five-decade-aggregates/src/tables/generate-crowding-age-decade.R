@@ -1,4 +1,16 @@
-# ----- Step 0: ACS ----- #
+# generate-crowding-age-decade.R
+#
+# Computes % crowded by age bucket and decade. ACS data only.
+#
+# Inputs:
+# - data/five-decade-db/ipums.duckdb (table: ipums_person)
+# - ../demographr (sibling package)
+# - five-decade-aggregates/src/helpers/setup.R
+#
+# Outputs:
+# - five-decade-aggregates/output/raw/crowded_age.csv
+#
+#
 library("dplyr")
 library("duckdb")
 library("dbplyr")

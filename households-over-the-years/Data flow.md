@@ -115,4 +115,13 @@ flowchart TD
 
     crowding_state_csvs --> gen_crowding_state_change
     gen_crowding_state_change --> crowding_state_change_csvs
+
+    %% --- Tables: crowding by age and decade ---
+    gen_crowding_age["src/tables/<br>generate-crowding-age-decade.R"]:::script
+    crowded_age_csv[("output/raw/<br>crowded_age.csv")]:::data
+
+    ipums_person_db --> gen_crowding_age
+    demographr --> gen_crowding_age
+    setup --> gen_crowding_age
+    gen_crowding_age --> crowded_age_csv
 ```
