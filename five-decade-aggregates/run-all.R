@@ -14,7 +14,7 @@ source("five-decade-aggregates/src/process-ipums-cps-person-1970-2020.R")
 
 # CPS household interrelationships (must run before cps-interrelationships)
 source("five-decade-aggregates/src/cps-household-interrelationships.R")
-# source("five-decade-aggregates/src/cps-interrelationships.R")
+source("five-decade-aggregates/src/tables/cps-interrelationships.R")
 
 # Generate tables (order matters: some scripts read CSVs from earlier ones)
 source("five-decade-aggregates/src/tables/generate-household-bedroom-crowding-overall.R")

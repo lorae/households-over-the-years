@@ -1,4 +1,18 @@
-# ----- Step 0: ACS ----- #
+# cps-interrelationships.R
+#
+# Aggregates CPS subfamily structure into decade-level summary statistics:
+# household size, children, spouses, subfamily counts, and multifamily rates.
+# Produces tables for adults-only and all-persons perspectives.
+#
+# Inputs:
+# - data/five-decade-db/ipums_cps.duckdb (table: ipums_person_with_subfamilies_over18)
+# - ../demographr (sibling package)
+#
+# Outputs:
+# - five-decade-aggregates/output/raw/combined_cps_adults.csv
+# - five-decade-aggregates/output/raw/combined_cps.csv
+#
+#
 library("dplyr")
 library("duckdb")
 library("dbplyr")

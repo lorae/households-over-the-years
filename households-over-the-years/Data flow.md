@@ -75,6 +75,16 @@ flowchart TD
     demographr --> cps_interrel
     cps_interrel --> cps_subfam_db
 
+    %% --- Tables: CPS interrelationships ---
+    cps_interrel_tables["src/tables/<br>cps-interrelationships.R"]:::script
+    combined_cps_adults[("output/raw/<br>combined_cps_adults.csv")]:::data
+    combined_cps[("output/raw/<br>combined_cps.csv")]:::data
+
+    cps_subfam_db --> cps_interrel_tables
+    demographr --> cps_interrel_tables
+    cps_interrel_tables --> combined_cps_adults
+    cps_interrel_tables --> combined_cps
+
     %% --- Tables: household/bedroom/crowding overall ---
     gen_hh_crowding["src/tables/<br>generate-household-bedroom-crowding-overall.R"]:::script
     hhsize_overall[("output/raw/<br>hhsize_decade_overall.csv")]:::data
