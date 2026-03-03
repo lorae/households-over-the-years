@@ -1,4 +1,20 @@
-# ----- Step 0: ACS ----- #
+# generate-crowding-state-decade.R
+#
+# Computes weighted mean household size, bedrooms, persons per bedroom, and
+# % crowded by state and decade. ACS data only.
+#
+# Inputs:
+# - data/five-decade-db/ipums.duckdb (table: ipums_person)
+# - ../demographr (sibling package)
+# - five-decade-aggregates/src/helpers/setup.R
+#
+# Outputs:
+# - five-decade-aggregates/output/raw/hhsize_state_decade.csv
+# - five-decade-aggregates/output/raw/bedroom_state_decade.csv
+# - five-decade-aggregates/output/raw/ppbr_state_decade.csv
+# - five-decade-aggregates/output/raw/crowded_state_decade.csv
+#
+#
 library(dplyr)
 library(duckdb)
 library(dbplyr)

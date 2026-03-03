@@ -99,4 +99,13 @@ flowchart TD
     demographr --> gen_crowding_subgroup
     setup --> gen_crowding_subgroup
     gen_crowding_subgroup --> crowding_subgroup_csvs
+
+    %% --- Tables: crowding by state and decade ---
+    gen_crowding_state["src/tables/<br>generate-crowding-state-decade.R"]:::script
+    crowding_state_csvs[("output/raw/<br>hhsize/bedroom/ppbr/crowded<br>_state_decade.csv (4 files)")]:::data
+
+    ipums_person_db --> gen_crowding_state
+    demographr --> gen_crowding_state
+    setup --> gen_crowding_state
+    gen_crowding_state --> crowding_state_csvs
 ```
