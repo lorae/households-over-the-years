@@ -1,4 +1,21 @@
-# ----- Step 0: ACS ----- #
+# generate-doubled-up-overall-subgroup.R
+#
+# Computes % doubled-up (multifamily households) by decade, overall and by
+# race/ethnicity, tenure, birthplace, and income (adults only). ACS data only.
+#
+# Inputs:
+# - data/five-decade-db/ipums.duckdb (table: ipums_person)
+# - ../demographr (sibling package)
+# - five-decade-aggregates/src/helpers/setup.R
+#
+# Outputs:
+# - five-decade-aggregates/output/raw/doubled_overall.csv
+# - five-decade-aggregates/output/raw/doubled_race.csv
+# - five-decade-aggregates/output/raw/doubled_tenure.csv
+# - five-decade-aggregates/output/raw/doubled_birthplace.csv
+# - five-decade-aggregates/output/raw/doubled_income_adults.csv
+#
+#
 library("dplyr")
 library("duckdb")
 library("dbplyr")
@@ -72,13 +89,6 @@ doubled_overall <- clean_binary_percent_output(
 write_csv(
   doubled_overall,
   "five-decade-aggregates/output/raw/doubled_overall.csv"
-)
-
-nonprime_decade_us <- crosstab_mean(
-  data = base_data,
-  value = 
-  wt_col = "PERWT",
-  group_by = c("")
 )
 
 # ====================

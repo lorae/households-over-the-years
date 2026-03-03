@@ -27,7 +27,7 @@ source("five-decade-aggregates/src/tables/generate-hhsize-subgroup.R")
 source("five-decade-aggregates/src/tables/generate-hhsize-buckets-race-decade.R")
 source("five-decade-aggregates/src/tables/generate-hhsize-bedroom-contrib-decade.R")
 source("five-decade-aggregates/src/tables/generate-hhsize-contributions-members.R")
-source("five-decade-aggregates/src/generate-doubled-up-overall-subgroup.R")
+source("five-decade-aggregates/src/tables/generate-doubled-up-overall-subgroup.R")
 source("five-decade-aggregates/src/generate-relative-crowding-risk.R")
 source("five-decade-aggregates/src/compare-surveys.R")
 

@@ -176,4 +176,13 @@ flowchart TD
 
     combined_cps_adults --> gen_hhsize_members
     gen_hhsize_members --> hhsize_members_csv
+
+    %% --- Tables: doubled-up by subgroup ---
+    gen_doubled["src/tables/<br>generate-doubled-up-overall-subgroup.R"]:::script
+    doubled_csvs[("output/raw/<br>doubled_*.csv<br>(5 files by subgroup)")]:::data
+
+    ipums_person_db --> gen_doubled
+    demographr --> gen_doubled
+    setup --> gen_doubled
+    gen_doubled --> doubled_csvs
 ```
