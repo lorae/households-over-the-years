@@ -1,4 +1,20 @@
 # generate-crowding-changes-state-1970-2020.R
+#
+# Computes 1970-to-2020 changes in household size, bedrooms, persons per
+# bedroom, and % crowded by state. Reads state-decade CSVs from script #8.
+#
+# Inputs:
+# - five-decade-aggregates/output/raw/hhsize_state_decade.csv
+# - five-decade-aggregates/output/raw/bedroom_state_decade.csv
+# - five-decade-aggregates/output/raw/ppbr_state_decade.csv
+# - five-decade-aggregates/output/raw/crowded_state_decade.csv
+#
+# Outputs:
+# - five-decade-aggregates/output/raw/hhsize_state_change_1970_2020.csv
+# - five-decade-aggregates/output/raw/bedroom_state_change_1970_2020.csv
+# - five-decade-aggregates/output/raw/ppbr_state_change_1970_2020.csv
+# - five-decade-aggregates/output/raw/crowded_state_change_1970_2020.csv
+#
 library(dplyr)
 library(readr)
 library(tidyr)

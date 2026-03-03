@@ -108,4 +108,11 @@ flowchart TD
     demographr --> gen_crowding_state
     setup --> gen_crowding_state
     gen_crowding_state --> crowding_state_csvs
+
+    %% --- Tables: crowding changes by state 1970-2020 ---
+    gen_crowding_state_change["src/tables/<br>generate-crowding-changes-state-1970-2020.R"]:::script
+    crowding_state_change_csvs[("output/raw/<br>hhsize/bedroom/ppbr/crowded<br>_state_change_1970_2020.csv (4 files)")]:::data
+
+    crowding_state_csvs --> gen_crowding_state_change
+    gen_crowding_state_change --> crowding_state_change_csvs
 ```
