@@ -124,4 +124,13 @@ flowchart TD
     demographr --> gen_crowding_age
     setup --> gen_crowding_age
     gen_crowding_age --> crowded_age_csv
+
+    %% --- Tables: crowding changes by race and age ---
+    gen_crowding_race_age["src/tables/<br>generate-crowding-changes-race-age.R"]:::script
+    crowding_race_age_csvs[("output/raw/<br>ppbr/crowded/hhsize<br>_race_age_*.csv (6 files)")]:::data
+
+    ipums_person_db --> gen_crowding_race_age
+    demographr --> gen_crowding_race_age
+    setup --> gen_crowding_race_age
+    gen_crowding_race_age --> crowding_race_age_csvs
 ```

@@ -1,4 +1,23 @@
-# ----- Step 0: ACS ----- #
+# generate-crowding-changes-race-age.R
+#
+# Computes persons per bedroom, % crowded, and household size by race/ethnicity,
+# age bucket, and decade. Also computes 1970-to-2020 changes for each measure.
+# ACS data only.
+#
+# Inputs:
+# - data/five-decade-db/ipums.duckdb (table: ipums_person)
+# - ../demographr (sibling package)
+# - five-decade-aggregates/src/helpers/setup.R
+#
+# Outputs:
+# - five-decade-aggregates/output/raw/ppbr_race_age_decade.csv
+# - five-decade-aggregates/output/raw/crowded_race_age_decade.csv
+# - five-decade-aggregates/output/raw/ppbr_race_age_change_1970_2020.csv
+# - five-decade-aggregates/output/raw/crowded_race_age_change_1970_2020.csv
+# - five-decade-aggregates/output/raw/hhsize_race_age_decade.csv
+# - five-decade-aggregates/output/raw/hhsize_race_age_change_1970_2020.csv
+#
+#
 library(dplyr)
 library(duckdb)
 library(dbplyr)
