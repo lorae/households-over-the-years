@@ -89,4 +89,14 @@ flowchart TD
     gen_hh_crowding --> bedroom_overall
     gen_hh_crowding --> ppbr_overall
     gen_hh_crowding --> cps_hhsize_overall
+
+    %% --- Tables: crowding overall by subgroup ---
+    setup(["src/helpers/<br>setup.R"]):::input
+    gen_crowding_subgroup["src/tables/<br>generate-crowding-overall-subgroup.R"]:::script
+    crowding_subgroup_csvs[("output/raw/<br>crowded_*.csv, ppbr_*.csv<br>(11 files by subgroup)")]:::data
+
+    ipums_person_db --> gen_crowding_subgroup
+    demographr --> gen_crowding_subgroup
+    setup --> gen_crowding_subgroup
+    gen_crowding_subgroup --> crowding_subgroup_csvs
 ```

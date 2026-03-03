@@ -1,4 +1,28 @@
-# ----- Step 0: ACS ----- #
+# generate-crowding-overall-subgroup.R
+#
+# Computes crowding rates (% with >2 persons per bedroom) and mean persons per
+# bedroom by decade, overall and by race/ethnicity, tenure, birthplace, and
+# income. ACS data only.
+#
+# Inputs:
+# - data/five-decade-db/ipums.duckdb (table: ipums_person)
+# - ../demographr (sibling package)
+# - five-decade-aggregates/src/helpers/setup.R
+#
+# Outputs:
+# - five-decade-aggregates/output/raw/crowded_overall.csv
+# - five-decade-aggregates/output/raw/ppbr_overall.csv
+# - five-decade-aggregates/output/raw/crowded_race.csv
+# - five-decade-aggregates/output/raw/ppbr_race.csv
+# - five-decade-aggregates/output/raw/crowded_tenure.csv
+# - five-decade-aggregates/output/raw/ppbr_tenure.csv
+# - five-decade-aggregates/output/raw/crowded_birthplace.csv
+# - five-decade-aggregates/output/raw/ppbr_birthplace.csv
+# - five-decade-aggregates/output/raw/crowded_income_adults.csv
+# - five-decade-aggregates/output/raw/crowded_income_everyone.csv
+# - five-decade-aggregates/output/raw/ppbr_income_everyone.csv
+#
+#
 library("dplyr")
 library("duckdb")
 library("dbplyr")
