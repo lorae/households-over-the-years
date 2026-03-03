@@ -1,5 +1,18 @@
 # generate-relative-crowding-risk.R
-
+#
+# Computes relative crowding risk by income, race/ethnicity, and tenure,
+# expressed as a ratio to a reference group (highest income, White, owner).
+#
+# Inputs:
+# - five-decade-aggregates/output/raw/crowded_income_everyone.csv
+# - five-decade-aggregates/output/raw/crowded_race.csv
+# - five-decade-aggregates/output/raw/crowded_tenure.csv
+#
+# Outputs:
+# - five-decade-aggregates/output/raw/crowded_rel_risk_income.csv
+# - five-decade-aggregates/output/raw/crowded_rel_risk_race.csv
+# - five-decade-aggregates/output/raw/crowded_rel_risk_tenure.csv
+#
 library(dplyr)
 library(readr)
 

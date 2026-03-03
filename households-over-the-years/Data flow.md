@@ -185,4 +185,11 @@ flowchart TD
     demographr --> gen_doubled
     setup --> gen_doubled
     gen_doubled --> doubled_csvs
+
+    %% --- Tables: relative crowding risk ---
+    gen_rel_risk["src/tables/<br>generate-relative-crowding-risk.R"]:::script
+    rel_risk_csvs[("output/raw/<br>crowded_rel_risk_*.csv<br>(3 files)")]:::data
+
+    crowding_subgroup_csvs --> gen_rel_risk
+    gen_rel_risk --> rel_risk_csvs
 ```
