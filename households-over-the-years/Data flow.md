@@ -151,4 +151,12 @@ flowchart TD
     demographr --> gen_hhsize_buckets
     setup --> gen_hhsize_buckets
     gen_hhsize_buckets --> hhsize_buckets_csv
+
+    %% --- Tables: hhsize/bedroom contributions to crowding ---
+    gen_hhsize_contrib["src/tables/<br>generate-hhsize-bedroom-contrib-decade.R"]:::script
+    contrib_csv[("output/raw/<br>intra_decade_crowding_contributions.csv")]:::data
+
+    hhsize_overall --> gen_hhsize_contrib
+    bedroom_overall --> gen_hhsize_contrib
+    gen_hhsize_contrib --> contrib_csv
 ```

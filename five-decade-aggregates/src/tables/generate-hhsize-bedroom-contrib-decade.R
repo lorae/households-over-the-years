@@ -1,4 +1,15 @@
 # generate-hhsize-bedroom-contrib-decade.R
+#
+# Decomposes intra-decade changes in persons per bedroom into contributions
+# from household size vs. bedroom count changes.
+#
+# Inputs:
+# - five-decade-aggregates/output/raw/hhsize_decade_overall.csv
+# - five-decade-aggregates/output/raw/bedroom_decade_overall.csv
+#
+# Outputs:
+# - five-decade-aggregates/output/raw/intra_decade_crowding_contributions.csv
+#
 library(readr)
 
 # ----------------------------
