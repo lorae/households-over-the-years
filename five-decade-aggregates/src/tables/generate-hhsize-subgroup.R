@@ -1,4 +1,21 @@
-# ----- Step 0: ACS ----- #
+# generate-hhsize-subgroup.R
+#
+# Computes weighted mean household size by decade, overall and by race/ethnicity,
+# tenure, birthplace, and income (adults only). ACS data only.
+#
+# Inputs:
+# - data/five-decade-db/ipums.duckdb (table: ipums_person)
+# - ../demographr (sibling package)
+# - five-decade-aggregates/src/helpers/setup.R
+#
+# Outputs:
+# - five-decade-aggregates/output/raw/hhsize_overall.csv
+# - five-decade-aggregates/output/raw/hhsize_race.csv
+# - five-decade-aggregates/output/raw/hhsize_tenure.csv
+# - five-decade-aggregates/output/raw/hhsize_birthplace.csv
+# - five-decade-aggregates/output/raw/hhsize_income_adults.csv
+#
+#
 library("dplyr")
 library("duckdb")
 library("dbplyr")

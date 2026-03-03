@@ -133,4 +133,13 @@ flowchart TD
     demographr --> gen_crowding_race_age
     setup --> gen_crowding_race_age
     gen_crowding_race_age --> crowding_race_age_csvs
+
+    %% --- Tables: household size by subgroup ---
+    gen_hhsize_subgroup["src/tables/<br>generate-hhsize-subgroup.R"]:::script
+    hhsize_subgroup_csvs[("output/raw/<br>hhsize_*.csv<br>(5 files by subgroup)")]:::data
+
+    ipums_person_db --> gen_hhsize_subgroup
+    demographr --> gen_hhsize_subgroup
+    setup --> gen_hhsize_subgroup
+    gen_hhsize_subgroup --> hhsize_subgroup_csvs
 ```
