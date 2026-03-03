@@ -192,4 +192,13 @@ flowchart TD
 
     crowding_subgroup_csvs --> gen_rel_risk
     gen_rel_risk --> rel_risk_csvs
+
+    %% --- Tables: compare ACS vs CPS surveys ---
+    gen_compare["src/tables/<br>compare-surveys.R"]:::script
+    compare_csv[("output/raw/<br>compare-surveys.csv")]:::data
+
+    ipums_person_db --> gen_compare
+    cps_person_db --> gen_compare
+    demographr --> gen_compare
+    gen_compare --> compare_csv
 ```

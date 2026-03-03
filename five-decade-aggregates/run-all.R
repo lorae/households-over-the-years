@@ -29,7 +29,7 @@ source("five-decade-aggregates/src/tables/generate-hhsize-bedroom-contrib-decade
 source("five-decade-aggregates/src/tables/generate-hhsize-contributions-members.R")
 source("five-decade-aggregates/src/tables/generate-doubled-up-overall-subgroup.R")
 source("five-decade-aggregates/src/tables/generate-relative-crowding-risk.R")
-source("five-decade-aggregates/src/compare-surveys.R")
+source("five-decade-aggregates/src/tables/compare-surveys.R")
 
 # Generate figures and formatted tables
 # (source individual scripts from five-decade-aggregates/src/figures/ as needed)

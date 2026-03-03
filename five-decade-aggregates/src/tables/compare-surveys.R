@@ -1,6 +1,17 @@
-# usa-household-bedroom-crowding.R
-
-# ----- Step 0: ACS ----- #
+# compare-surveys.R
+#
+# Compares ACS and CPS surveys side-by-side: population counts, group quarters
+# shares, and household size by decade.
+#
+# Inputs:
+# - data/five-decade-db/ipums.duckdb (table: ipums_person)
+# - data/five-decade-db/ipums_cps.duckdb (table: ipums_person)
+# - ../demographr (sibling package)
+#
+# Outputs:
+# - five-decade-aggregates/output/raw/compare-surveys.csv
+#
+#
 library("dplyr")
 library("duckdb")
 library("dbplyr")
