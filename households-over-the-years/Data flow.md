@@ -75,6 +75,14 @@ flowchart TD
     demographr --> cps_interrel
     cps_interrel --> cps_subfam_db
 
+    %% --- Enrich: CPS interrelationships with demographics ---
+    enrich_cps["src/<br>add-demographics-to-interrelationships.R"]:::script
+    cps_enriched_db[("data/five-decade-db/ipums_cps.duckdb<br>(table: ipums_person_enriched)")]:::data
+
+    cps_subfam_db --> enrich_cps
+    cps_person_db --> enrich_cps
+    enrich_cps --> cps_enriched_db
+
     %% --- Tables: CPS interrelationships ---
     cps_interrel_tables["src/tables/<br>cps-interrelationships.R"]:::script
     combined_cps_adults[("output/raw/<br>combined_cps_adults.csv")]:::data
@@ -84,6 +92,16 @@ flowchart TD
     demographr --> cps_interrel_tables
     cps_interrel_tables --> combined_cps_adults
     cps_interrel_tables --> combined_cps
+
+    %% --- Tables: CPS interrelationships by race/ethnicity ---
+    cps_interrel_race["src/tables/<br>cps-interrelationships-race.R"]:::script
+    combined_cps_race[("output/raw/<br>combined_cps_race.csv")]:::data
+    combined_cps_adults_race[("output/raw/<br>combined_cps_adults_race.csv")]:::data
+
+    cps_enriched_db --> cps_interrel_race
+    demographr --> cps_interrel_race
+    cps_interrel_race --> combined_cps_race
+    cps_interrel_race --> combined_cps_adults_race
 
     %% --- Tables: household/bedroom/crowding overall ---
     gen_hh_crowding["src/tables/<br>generate-household-bedroom-crowding-overall.R"]:::script
