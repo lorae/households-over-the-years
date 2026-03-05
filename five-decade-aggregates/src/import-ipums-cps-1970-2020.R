@@ -67,7 +67,8 @@ ipums_extract <- define_extract_micro(
     "MOMLOC", "POPLOC", "PELNDAD", "PELNMOM", "PEMOMTYP", 
     "SPLOC",  "ASPOUSE", "PECOHAB",
     "NCHILD",  "NSIBS",
-    "SEX", "AGE"
+    "SEX", "AGE",
+    "RACE", "HISPAN"
   )
 )
 
