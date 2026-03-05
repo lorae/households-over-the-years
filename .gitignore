@@ -61,3 +61,6 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+# Claude Code
+.claude/
