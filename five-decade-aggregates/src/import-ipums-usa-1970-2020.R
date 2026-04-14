@@ -48,7 +48,7 @@ ipums_extract <- define_extract_micro(
   collection = "usa",
   samples = c(
     # For more info see https://usa.ipums.org/usa/sampdesc.shtml
-    "us1970c", # 1970 Form 1 Metro
+    "us1970c", # 1970 Form 1 Metro (https://usa.ipums.org/usa/sampdesc.shtml#us1970c)
     "us1980b", # 1980 1%
     "us1990b", # 1990 1%
     "us2000g", # 2000 1% 
