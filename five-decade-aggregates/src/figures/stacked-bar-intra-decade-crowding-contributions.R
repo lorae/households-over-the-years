@@ -59,10 +59,14 @@ p <- ggplot(
 ) +
   geom_col(width = 0.65, color = "black", linewidth = 0.3) +
   scale_y_continuous(
-    limits = c(0, 100),
     breaks = seq(0, 100, by = 20),
     labels = percent_format(scale = 1)
   ) +
+  # Zoom the view to 0-100 without dropping data: rounding in the stored
+  # contributions can make a stacked bar top exceed 100 by a hair, and
+  # scale limits would silently delete that whole segment (e.g. the 1970-1980
+  # household-size bar). coord_cartesian clips the view instead.
+  coord_cartesian(ylim = c(0, 100)) +
   scale_fill_manual(
     values = c(
       "Increased bedrooms"        = "grey70",
