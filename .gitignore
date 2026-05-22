@@ -46,6 +46,9 @@ vignettes/*.pdf
 # OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
 .httr-oauth
 
+# Default graphics device artifact from running scripts via Rscript
+Rplots.pdf
+
 # knitr and R markdown default cache directories
 *_cache/
 /cache/
