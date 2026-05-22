@@ -68,22 +68,25 @@ dbDisconnect(con)
 
 # --- regression 1: cost burden ~ decades since 1970 + bedrooms (categorical) ---
 
-m1 <- lm(cost_burden ~ decades_since_1970 + factor(bedrooms_recode), data = reg_data)
+m1 <- lm(cost_burden ~ decades_since_1970 + factor(bedrooms_recode),
+         data = reg_data, weights = HHWT)
 
 # --- regression 2: add tenure (renter as reference) ---
 
-m2 <- lm(cost_burden ~ decades_since_1970 + factor(bedrooms_recode) + tenure, data = reg_data)
+m2 <- lm(cost_burden ~ decades_since_1970 + factor(bedrooms_recode) + tenure,
+         data = reg_data, weights = HHWT)
 
 # --- regression 3: add age (minus 18) as a continuous control ---
 
-m3 <- lm(cost_burden ~ decades_since_1970 + factor(bedrooms_recode) + tenure + age_minus_18, data = reg_data)
+m3 <- lm(cost_burden ~ decades_since_1970 + factor(bedrooms_recode) + tenure + age_minus_18,
+         data = reg_data, weights = HHWT)
 
 # --- regression 4: add hispan binary and race/eth (White omitted) ---
 
 m4 <- lm(
   cost_burden ~ decades_since_1970 + factor(bedrooms_recode) + tenure + age_minus_18 +
     hispan_binary + race,
-  data = reg_data
+  data = reg_data, weights = HHWT
 )
 
 # --- regression 5: add state fixed effects (coefficients hidden in output) ---
@@ -91,16 +94,40 @@ m4 <- lm(
 m5 <- lm(
   cost_burden ~ decades_since_1970 + factor(bedrooms_recode) + tenure + age_minus_18 +
     hispan_binary + race + factor(STATEFIP),
-  data = reg_data
+  data = reg_data, weights = HHWT
+)
+
+# --- regression 6: model 5 + decade x bedrooms interaction ---
+
+m6 <- lm(
+  cost_burden ~ decades_since_1970 + factor(bedrooms_recode) + tenure + age_minus_18 +
+    hispan_binary + race + factor(STATEFIP) +
+    decades_since_1970:factor(bedrooms_recode),
+  data = reg_data, weights = HHWT
+)
+
+models <- list(
+  "Model 1" = m1, "Model 2" = m2, "Model 3" = m3,
+  "Model 4" = m4, "Model 5" = m5, "Model 6" = m6
+)
+
+fe_rows <- tibble::tribble(
+  ~term, ~"Model 1", ~"Model 2", ~"Model 3", ~"Model 4", ~"Model 5", ~"Model 6",
+  "State FE", "No", "No", "No", "No", "Yes", "Yes"
 )
 
 modelsummary(
-  list("Model 1" = m1, "Model 2" = m2, "Model 3" = m3, "Model 4" = m4, "Model 5" = m5),
+  models,
   output = "household-archetypes/output/tables/fig04-single-mother-rent-burden-regressions.docx",
   stars = TRUE,
   coef_omit = "STATEFIP",
-  add_rows = tibble::tribble(
-    ~term, ~"Model 1", ~"Model 2", ~"Model 3", ~"Model 4", ~"Model 5",
-    "State FE", "No", "No", "No", "No", "Yes"
-  )
+  add_rows = fe_rows
+)
+
+modelsummary(
+  models,
+  output = "household-archetypes/output/tables/fig04-single-mother-rent-burden-regressions.html",
+  stars = TRUE,
+  coef_omit = "STATEFIP",
+  add_rows = fe_rows
 )

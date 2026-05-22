@@ -1,0 +1,12 @@
+Variable,Value,Pct
+TOTAL (e),-0.0593,100
+n_children_under_18,-0.1256,211.8
+hoh_educ_bucket,0.0556,-93.8
+hhincome_2020_harmonized,0.0438,-73.9
+hoh_race_eth,-0.0416,70.2
+hoh_sex,0.0266,-44.9
+n_adults,-0.0259,43.7
+tenure,0.0155,-26.1
+hoh_age,0.0152,-25.6
+hoh_us_born,-0.0151,25.5
+region4,-0.0079,13.3

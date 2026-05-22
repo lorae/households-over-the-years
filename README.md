@@ -46,8 +46,10 @@ have trouble following these steps, please follow the **Detailed Start** guide b
     
     ```r
     renv::restore()
-    source("k-means-clustering/run-all.R")   # 1900-2023 clustering
+    source("k-means-clustering/run-all.R")    # 1900-2023 clustering
     source("five-decade-aggregates/run-all.R") # 1970-2020 crowding
+    source("household-archetypes/run-all.R")   # single-mother cost burden 1970-2020
+    source("bedroom-allocation/run-all.R")     # how characteristics map to bedrooms over time
     ```
     
 
@@ -160,10 +162,12 @@ from the codebase.
 
 ### Part C: Run the analysis scripts
 
-The code for this project is organized into two sub-projects:
+The code for this project is organized into four sub-projects, each with its own `run-all.R`, `src/`, `output/`, and (where used) `throughput/`. All sub-projects share the top-level `data/five-decade-db/ipums.duckdb` and the `renv/` environment, and all load the sibling `demographr` package via `devtools::load_all("../demographr")`.
 
-- `k-means-clustering/` — K-means clustering analysis (1900-2023)
-- `five-decade-aggregates/` — Household crowding and subfamily detection (1970-2020)
+- **`k-means-clustering/`** — Unsupervised clustering of household archetypes using IPUMS USA microdata from 1900–2023. Currently on hold.
+- **`five-decade-aggregates/`** — Descriptive analysis of household crowding, persons-per-bedroom, and subfamily structure from 1970 to 2020 (decennial census + ACS 5-year pools). Also contains the graph-based subfamily detection pipeline over CPS data.
+- **`household-archetypes/`** — Narrowly-defined single-mother household analysis: bedroom distribution, cost burden distributions (renters + owners), mean rent burden by bedrooms over time, and a progression of weighted regressions estimating cost burden. Includes `single-mother-results.Rmd`, a knitted HTML write-up of the findings.
+- **`bedroom-allocation/`** — How household and person characteristics translate into bedrooms, and how that relationship has shifted over time. Includes a full-population bedroom distribution by tenure (1970 vs 2020) and a planned series of per-decade regressions of `BEDROOMS` on household characteristics, with counterfactual decompositions across decades.
 
 8. Run the analysis by sourcing the appropriate `run-all.R` in your R console:
 
@@ -173,6 +177,12 @@ The code for this project is organized into two sub-projects:
 
     # Five-decade crowding analysis (1970-2020)
     source("five-decade-aggregates/run-all.R")
+
+    # Single-mother cost burden analysis (1970-2020)
+    source("household-archetypes/run-all.R")
+
+    # Bedroom allocation across household characteristics over time
+    source("bedroom-allocation/run-all.R")
     ```
     
 

@@ -61,3 +61,29 @@ ggsave(
   height = 5,
   dpi = 300
 )
+
+p_presentation <- p +
+  labs(y = "Household\nsize") +
+  theme_minimal(base_size = 18) +
+  theme(
+    legend.position = "right",
+    legend.text = element_text(size = 16),
+    axis.title.y = element_text(
+      angle = 0,
+      vjust = 0.5,
+      hjust = 1,
+      margin = margin(r = 10),
+      size = 18
+    ),
+    axis.text.x = element_text(size = 16),
+    axis.text.y = element_text(size = 16),
+    plot.margin = margin(10, 15, 10, 10)
+  )
+
+ggsave(
+  "five-decade-aggregates/output/lines_hhsize_birthplace_year-presentation.jpeg",
+  p_presentation,
+  width = 11,
+  height = 6,
+  dpi = 300
+)

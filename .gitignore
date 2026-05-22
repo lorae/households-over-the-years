@@ -4,10 +4,14 @@ data/raw-microdata/**
 data/db/**
 !data/db/.gitkeep
 data/five-decade-db/**
+data/bedroom-allocation-kob-db/**
 
 # K-means intermediate results
 k-means-clustering/throughput/**
 !k-means-clustering/throughput/.gitkeep
+
+# Bedroom-allocation intermediate results
+bedroom-allocation/throughput/**
 
 # History files
 .Rhistory

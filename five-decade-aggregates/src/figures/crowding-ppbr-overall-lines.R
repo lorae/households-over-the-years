@@ -63,3 +63,30 @@ ggsave(
   units = "px",
   dpi = 200
 )
+
+# ----- Presentation version ----- #
+presentation_theme <- theme_minimal(base_size = 18) +
+  theme(
+    plot.title = element_text(size = 20, face = "bold"),
+    axis.text.x = element_text(size = 16),
+    axis.text.y = element_text(size = 20),
+    panel.grid.minor = element_blank(),
+    plot.margin = margin(10, 15, 10, 10)
+  )
+
+p_ppbr_presentation <- p_ppbr + presentation_theme
+p_crowding_presentation <- p_crowding +
+  labs(title = "Percent in crowded households") +
+  presentation_theme
+
+facet_lines_presentation <- p_ppbr_presentation + p_crowding_presentation +
+  plot_layout(ncol = 2)
+
+ggsave(
+  "five-decade-aggregates/output/facet-lines-crowding-ppbr-overall-presentation.jpeg",
+  plot = facet_lines_presentation,
+  width = 14,
+  height = 6,
+  units = "in",
+  dpi = 300
+)

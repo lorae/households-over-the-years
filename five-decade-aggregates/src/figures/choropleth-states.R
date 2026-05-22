@@ -133,6 +133,22 @@ ggsave(
   dpi = 300
 )
 
+p_ppbr_2020_presentation <- p_ppbr_2020 +
+  theme(
+    legend.title = element_text(size = 22),
+    legend.text = element_text(size = 20),
+    legend.key.height = unit(2, "lines"),
+    legend.key.width = unit(1.4, "lines")
+  )
+
+ggsave(
+  filename = "five-decade-aggregates/output/choropleth-state-ppbr-2020-presentation.png",
+  plot = p_ppbr_2020_presentation,
+  width = 12,
+  height = 6,
+  dpi = 300
+)
+
 ggsave(
   filename = "five-decade-aggregates/output/choropleth-state-change-hhsize-1970-2020.png",
   plot = p_change,
