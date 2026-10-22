@@ -104,13 +104,19 @@ ggsave(
 # ----------------------------
 p_presentation <- p +
   labs(y = "Percent of\ncrowding\nreduction") +
+  scale_fill_manual(
+    values = c(
+      "Increased bedrooms"        = "steelblue",
+      "Decreased household size"  = "white"
+    )
+  ) +
   scale_x_discrete(
     labels = c(
-      "1970-1980" = "1970 - 1980",
-      "1980-1990" = "1980 - 1990",
-      "1990-2000" = "1990 - 2000",
-      "2000-2012" = "2000 - 2010",
-      "2012-2022" = "2010 - 2020"
+      "1970-1980" = "1970-1980",
+      "1980-1990" = "1980-1990",
+      "1990-2000" = "1990-2000",
+      "2000-2012" = "2000-2010",
+      "2012-2022" = "2010-2020"
     )
   ) +
   theme_minimal(base_size = 18) +
@@ -118,8 +124,9 @@ p_presentation <- p +
     panel.grid.major.x = element_blank(),
     panel.grid.minor = element_blank(),
     legend.position = "right",
-    legend.text = element_text(size = 16),
-    axis.text.x = element_text(size = 14),
+    legend.text = element_text(size = 18),
+    legend.key.size = unit(1.5, "lines"),
+    axis.text.x = element_text(size = 18),
     axis.text.y = element_text(size = 18),
     axis.title.y = element_text(
       angle = 0,
@@ -134,7 +141,7 @@ p_presentation <- p +
 ggsave(
   file.path(out_dir, "stacked-bar-intra-decade-crowding-contributions-presentation.png"),
   plot = p_presentation,
-  width = 13,
-  height = 6,
+  width = 15,
+  height = 7,
   dpi = 300
 )
