@@ -11,7 +11,9 @@
 # - five-decade-aggregates/output/raw/intra_decade_crowding_contributions.csv
 # - five-decade-aggregates/output/raw/total_crowding_contributions.csv
 #
+library(dplyr)
 library(readr)
+library(tidyr)
 
 # ----------------------------
 # Paths
@@ -62,8 +64,19 @@ total_contributions <- hhsize_bedrooms |>
     change_bedroom = bedroom_end - bedroom_start
   ) |>
   mutate(
-    contrib_percent_hhsize = -change_hhsize / (change_bedroom - change_hhsize),
-    contrib_percent_bedroom = change_bedroom / (change_bedroom - change_hhsize)
+    # Equal effects: one added person counts the same as one removed bedroom
+    equal_effects_hhsize = -change_hhsize / (change_bedroom - change_hhsize),
+    equal_effects_bedroom = change_bedroom / (change_bedroom - change_hhsize)
+  ) |>
+  select(period_label, starts_with("equal_effects_")) |>
+  pivot_longer(
+    -period_label,
+    names_to = c("method", ".value"),
+    names_pattern = "(.*)_(hhsize|bedroom)"
+  ) |>
+  rename(
+    contrib_percent_hhsize = hhsize,
+    contrib_percent_bedroom = bedroom
   )
 
 write_csv(
