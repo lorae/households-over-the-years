@@ -61,14 +61,19 @@ total_contributions <- hhsize_bedrooms |>
     bedroom_start = first(bedroom),
     bedroom_end = last(bedroom),
     change_hhsize = hhsize_end - hhsize_start,
-    change_bedroom = bedroom_end - bedroom_start
+    change_bedroom = bedroom_end - bedroom_start,
+    change_ppbr = hhsize_end / bedroom_end - hhsize_start / bedroom_start
   ) |>
   mutate(
     # Equal effects: one added person counts the same as one removed bedroom
     equal_effects_hhsize = -change_hhsize / (change_bedroom - change_hhsize),
-    equal_effects_bedroom = change_bedroom / (change_bedroom - change_hhsize)
+    equal_effects_bedroom = change_bedroom / (change_bedroom - change_hhsize),
+    # Das Gupta: two-factor product decomposition, Das Gupta (1993), eqs. 2.1-2.9
+    das_gupta_hhsize = change_hhsize * (1 / bedroom_start + 1 / bedroom_end) / 2 / change_ppbr,
+    das_gupta_bedroom = (hhsize_start + hhsize_end) / 2 *
+      (1 / bedroom_end - 1 / bedroom_start) / change_ppbr
   ) |>
-  select(period_label, starts_with("equal_effects_")) |>
+  select(period_label, starts_with("equal_effects_"), starts_with("das_gupta_")) |>
   pivot_longer(
     -period_label,
     names_to = c("method", ".value"),
