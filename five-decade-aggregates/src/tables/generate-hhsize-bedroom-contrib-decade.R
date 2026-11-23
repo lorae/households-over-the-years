@@ -9,6 +9,7 @@
 #
 # Outputs:
 # - five-decade-aggregates/output/raw/intra_decade_crowding_contributions.csv
+# - five-decade-aggregates/output/raw/total_crowding_contributions.csv
 #
 library(readr)
 
@@ -45,4 +46,27 @@ hhsize_bedrooms <- hhsize |>
 write_csv(
   hhsize_bedrooms,
   file.path(out_dir, "intra_decade_crowding_contributions.csv")
+)
+
+# ----------------------------
+# Total contributions, first to last year
+# ----------------------------
+total_contributions <- hhsize_bedrooms |>
+  summarise(
+    period_label = paste0(first(YEAR), "-", last(YEAR)),
+    hhsize_start = first(hhsize),
+    hhsize_end = last(hhsize),
+    bedroom_start = first(bedroom),
+    bedroom_end = last(bedroom),
+    change_hhsize = hhsize_end - hhsize_start,
+    change_bedroom = bedroom_end - bedroom_start
+  ) |>
+  mutate(
+    contrib_percent_hhsize = -change_hhsize / (change_bedroom - change_hhsize),
+    contrib_percent_bedroom = change_bedroom / (change_bedroom - change_hhsize)
+  )
+
+write_csv(
+  total_contributions,
+  file.path(out_dir, "total_crowding_contributions.csv")
 )
