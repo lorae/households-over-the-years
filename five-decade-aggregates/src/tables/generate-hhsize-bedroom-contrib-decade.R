@@ -1,14 +1,15 @@
 # generate-hhsize-bedroom-contrib-decade.R
 #
-# Decomposes intra-decade changes in persons per bedroom into contributions
-# from household size vs. bedroom count changes.
+# Decomposes changes in persons per bedroom into contributions from household
+# size vs. bedroom count changes, for each decade and for the full period,
+# using three methods (equal effects, Das Gupta, log).
 #
 # Inputs:
 # - five-decade-aggregates/output/raw/hhsize_decade_overall.csv
 # - five-decade-aggregates/output/raw/bedroom_decade_overall.csv
 #
 # Outputs:
-# - five-decade-aggregates/output/raw/intra_decade_crowding_contributions.csv
+# - five-decade-aggregates/output/raw/decade_crowding_contributions.csv
 # - five-decade-aggregates/output/raw/total_crowding_contributions.csv
 #
 library(dplyr)
@@ -23,31 +24,72 @@ out_dir  <- "five-decade-aggregates/output/raw"
 
 hhsize   <- read_csv(file.path(data_dir, "hhsize_decade_overall.csv"), show_col_types = FALSE)
 bedrooms <- read_csv(file.path(data_dir, "bedroom_decade_overall.csv"), show_col_types = FALSE)
-  
+
 hhsize_bedrooms <- hhsize |>
   left_join(
     bedrooms |> select(YEAR, bedroom),
     by = "YEAR"
   ) |>
-  arrange(YEAR) |>
-  mutate(
-    decade_label = if_else(
-      is.na(lag(YEAR)),
-      NA_character_,
-      paste0(lag(YEAR), "-", YEAR)
-    ),
-    change_hhsize = hhsize - lag(hhsize),
-    change_bedroom = bedroom - lag(bedroom)
+  arrange(YEAR)
+
+# ----------------------------
+# Decomposition
+# ----------------------------
+# Takes one row per period with start/end hhsize and bedroom; returns one row
+# per period x method with the share of the ppbr change from each component.
+decompose_ppbr <- function(periods) {
+  periods |>
+    mutate(
+      change_hhsize = hhsize_end - hhsize_start,
+      change_bedroom = bedroom_end - bedroom_start,
+      change_ppbr = hhsize_end / bedroom_end - hhsize_start / bedroom_start,
+      # Equal effects: one added person counts the same as one removed bedroom
+      equal_effects_hhsize = -change_hhsize / (change_bedroom - change_hhsize),
+      equal_effects_bedroom = change_bedroom / (change_bedroom - change_hhsize),
+      # Das Gupta: two-factor product decomposition, Das Gupta (1993), eqs. 2.1-2.9
+      das_gupta_hhsize = change_hhsize * (1 / bedroom_start + 1 / bedroom_end) / 2 / change_ppbr,
+      das_gupta_bedroom = (hhsize_start + hhsize_end) / 2 *
+        (1 / bedroom_end - 1 / bedroom_start) / change_ppbr,
+      # Log: ln(h/b) = ln(h) - ln(b), so the log change in ppbr splits exactly
+      log_hhsize = log(hhsize_end / hhsize_start) /
+        log((hhsize_end / bedroom_end) / (hhsize_start / bedroom_start)),
+      log_bedroom = log(bedroom_start / bedroom_end) /
+        log((hhsize_end / bedroom_end) / (hhsize_start / bedroom_start))
+    ) |>
+    select(
+      period_label,
+      starts_with("equal_effects_"),
+      starts_with("das_gupta_"),
+      starts_with("log_")
+    ) |>
+    pivot_longer(
+      -period_label,
+      names_to = c("method", ".value"),
+      names_pattern = "(.*)_(hhsize|bedroom)"
+    ) |>
+    rename(
+      contrib_percent_hhsize = hhsize,
+      contrib_percent_bedroom = bedroom
+    )
+}
+
+# ----------------------------
+# Decade contributions
+# ----------------------------
+decade_contributions <- hhsize_bedrooms |>
+  transmute(
+    period_label = paste0(lag(YEAR), "-", YEAR),
+    hhsize_start = lag(hhsize),
+    hhsize_end = hhsize,
+    bedroom_start = lag(bedroom),
+    bedroom_end = bedroom
   ) |>
-  relocate(decade_label, .after = YEAR)|>
-  mutate(
-    contrib_percent_hhsize = -change_hhsize / (change_bedroom - change_hhsize),
-    contrib_percent_bedroom = change_bedroom / (change_bedroom - change_hhsize)
-  )
+  filter(!is.na(hhsize_start)) |>
+  decompose_ppbr()
 
 write_csv(
-  hhsize_bedrooms,
-  file.path(out_dir, "intra_decade_crowding_contributions.csv")
+  decade_contributions,
+  file.path(out_dir, "decade_crowding_contributions.csv")
 )
 
 # ----------------------------
@@ -59,40 +101,9 @@ total_contributions <- hhsize_bedrooms |>
     hhsize_start = first(hhsize),
     hhsize_end = last(hhsize),
     bedroom_start = first(bedroom),
-    bedroom_end = last(bedroom),
-    change_hhsize = hhsize_end - hhsize_start,
-    change_bedroom = bedroom_end - bedroom_start,
-    change_ppbr = hhsize_end / bedroom_end - hhsize_start / bedroom_start
+    bedroom_end = last(bedroom)
   ) |>
-  mutate(
-    # Equal effects: one added person counts the same as one removed bedroom
-    equal_effects_hhsize = -change_hhsize / (change_bedroom - change_hhsize),
-    equal_effects_bedroom = change_bedroom / (change_bedroom - change_hhsize),
-    # Das Gupta: two-factor product decomposition, Das Gupta (1993), eqs. 2.1-2.9
-    das_gupta_hhsize = change_hhsize * (1 / bedroom_start + 1 / bedroom_end) / 2 / change_ppbr,
-    das_gupta_bedroom = (hhsize_start + hhsize_end) / 2 *
-      (1 / bedroom_end - 1 / bedroom_start) / change_ppbr,
-    # Log: ln(h/b) = ln(h) - ln(b), so the log change in ppbr splits exactly
-    log_hhsize = log(hhsize_end / hhsize_start) /
-      log((hhsize_end / bedroom_end) / (hhsize_start / bedroom_start)),
-    log_bedroom = log(bedroom_start / bedroom_end) /
-      log((hhsize_end / bedroom_end) / (hhsize_start / bedroom_start))
-  ) |>
-  select(
-    period_label,
-    starts_with("equal_effects_"),
-    starts_with("das_gupta_"),
-    starts_with("log_")
-  ) |>
-  pivot_longer(
-    -period_label,
-    names_to = c("method", ".value"),
-    names_pattern = "(.*)_(hhsize|bedroom)"
-  ) |>
-  rename(
-    contrib_percent_hhsize = hhsize,
-    contrib_percent_bedroom = bedroom
-  )
+  decompose_ppbr()
 
 write_csv(
   total_contributions,

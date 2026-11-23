@@ -17,7 +17,7 @@ out_dir  <- "five-decade-aggregates/output"
 # Read data
 # ----------------------------
 crowding_contrib <- read_csv(
-  file.path(data_dir, "intra_decade_crowding_contributions.csv"),
+  file.path(data_dir, "decade_crowding_contributions.csv"),
   show_col_types = FALSE
 )
 
@@ -25,9 +25,9 @@ crowding_contrib <- read_csv(
 # Prep for plotting
 # ----------------------------
 plot_data <- crowding_contrib |>
-  filter(!is.na(decade_label)) |>
+  filter(method == "equal_effects") |>
   select(
-    decade_label,
+    decade_label = period_label,
     contrib_percent_hhsize,
     contrib_percent_bedroom
   ) |>

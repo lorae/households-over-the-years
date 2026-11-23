@@ -182,7 +182,7 @@ flowchart TD
 
     %% --- Tables: hhsize/bedroom contributions to crowding ---
     gen_hhsize_contrib["src/tables/<br>generate-hhsize-bedroom-contrib-decade.R"]:::script
-    contrib_csv[("output/raw/<br>intra_decade_crowding_contributions.csv")]:::data
+    contrib_csv[("output/raw/<br>decade_crowding_contributions.csv")]:::data
     total_contrib_csv[("output/raw/<br>total_crowding_contributions.csv")]:::data
 
     hhsize_overall --> gen_hhsize_contrib
