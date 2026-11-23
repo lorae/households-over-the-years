@@ -71,9 +71,19 @@ total_contributions <- hhsize_bedrooms |>
     # Das Gupta: two-factor product decomposition, Das Gupta (1993), eqs. 2.1-2.9
     das_gupta_hhsize = change_hhsize * (1 / bedroom_start + 1 / bedroom_end) / 2 / change_ppbr,
     das_gupta_bedroom = (hhsize_start + hhsize_end) / 2 *
-      (1 / bedroom_end - 1 / bedroom_start) / change_ppbr
+      (1 / bedroom_end - 1 / bedroom_start) / change_ppbr,
+    # Log: ln(h/b) = ln(h) - ln(b), so the log change in ppbr splits exactly
+    log_hhsize = log(hhsize_end / hhsize_start) /
+      log((hhsize_end / bedroom_end) / (hhsize_start / bedroom_start)),
+    log_bedroom = log(bedroom_start / bedroom_end) /
+      log((hhsize_end / bedroom_end) / (hhsize_start / bedroom_start))
   ) |>
-  select(period_label, starts_with("equal_effects_"), starts_with("das_gupta_")) |>
+  select(
+    period_label,
+    starts_with("equal_effects_"),
+    starts_with("das_gupta_"),
+    starts_with("log_")
+  ) |>
   pivot_longer(
     -period_label,
     names_to = c("method", ".value"),
